@@ -1,15 +1,39 @@
 import { useState } from "react";
 import InputLabelComponent from "../components/InputLabelComponent";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { signup } from "../redux/slices/authenticationSlice";
+import type { AppDispatch } from "../redux/store";
+import LoaderWhite from "../components/WhiteLoaderCompoenet";
 
 export default function Signup(){
+
+  // ------- DISPATCH AND ERROR HANLDERS --------
+
+  const dispatch = useDispatch<AppDispatch>();
+  const [isLoaderActive, setLoaderActive] = useState(false);
+  const [isErrorActive, setErrorActive] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const [inputs, setInputs] = useState({
     username:"",
     password:"",
     confirmPassword:""
-  })
+  });
 
+  function popError(errorMessage:string){
+    setLoaderActive(false);
+    setErrorActive(true);
+    setErrorMessage(errorMessage);
+
+    setTimeout(()=>{
+      setErrorActive(false);
+      setErrorMessage("");
+    }, 5000)
+  }
+
+  // ------- DISPATCH AND ERROR HANLDERS --------
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>){
     const {name ,value} = e.target
@@ -18,6 +42,33 @@ export default function Signup(){
       ...inputs,
       [name]:value
     })
+  }
+
+
+  async function OnClickSignup(){
+
+    setLoaderActive(true);
+
+    if(!inputs.username || !inputs.password || !inputs.confirmPassword){
+      popError("Incomplete Inputs");
+      return
+    }
+    
+    if(inputs.password !== inputs.confirmPassword){
+      popError("Passwords dont match");
+      return
+    }
+
+    try {
+      const res = await dispatch(signup(inputs)).unwrap()
+      setLoaderActive(false);
+      if(res?.data.success === true){
+        navigate("/signin");
+      } 
+    } catch (error:any) {
+      popError(error?.message!);
+    }
+
   }
 
   return(
@@ -72,9 +123,18 @@ export default function Signup(){
           placeholder="******"
         />
 
-        <button className="bg-white rounded-md my-4 py-2.5 text-sm font-semibold tracking-tight cursor-pointer">
-          Create Account
+        <button className="bg-white rounded-md mt-4 my-2 py-2.5 text-sm font-semibold tracking-tight cursor-pointer flex justify-center items-center" onClick={OnClickSignup}>
+          {
+            isLoaderActive ? <LoaderWhite/> : <>Create Account</>
+          }
         </button>
+
+        {
+          isErrorActive &&
+          <p className="text-center text-red-400 text-sm my-2 max-w-xs text-wrap overflow-hidden">
+            {errorMessage}
+          </p>
+        }
 
         <span className="text-sm text-center text-[#555555]">
           <p>Already have an account? 
@@ -83,6 +143,7 @@ export default function Signup(){
               </Link>
           </p>
         </span>
+
       </div>
     </div>
   )
