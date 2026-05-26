@@ -1,8 +1,33 @@
 import { useState } from "react"
 import InputLabelComponent from "../components/InputLabelComponent";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { signin } from "../redux/slices/authenticationSlice";
+import type { AppDispatch } from "../redux/store";
+import LoaderWhite from "../components/WhiteLoaderCompoenet";
 
 export default function Signin(){
+
+  // ------- DISPATCH AND ERROR HANLDERS --------
+
+  const dispatch = useDispatch<AppDispatch>();
+  const [isLoaderActive, setLoaderActive] = useState(false);
+  const [isErrorActive, setErrorActive] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+
+  function popError(errorMessage:string){
+    setLoaderActive(false);
+    setErrorActive(true);
+    setErrorMessage(errorMessage);
+
+    setTimeout(()=>{
+      setErrorActive(false);
+      setErrorMessage("");
+    }, 5000)
+  }
+
+  // ------- DISPATCH AND ERROR HANLDERS --------
 
   const [inputs, setInputs] = useState({
     username:"",
@@ -12,11 +37,29 @@ export default function Signin(){
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>){
     const {name ,value} = e.target
-
     setInputs({
       ...inputs,
       [name]:value
     })
+  }
+
+  async function OnClickSignin() {
+    setLoaderActive(true);
+
+    if(!inputs.username || !inputs.password){
+      popError("Incomplete Inputs");
+      return
+    }
+
+    try {
+      const res = await dispatch(signin(inputs)).unwrap();
+      setLoaderActive(false);
+      if(res?.data.success === true){
+        navigate("/dashboard");
+      }
+    } catch (error:any) {
+      popError(error?.message)
+    }
   }
 
   return(
@@ -35,8 +78,7 @@ export default function Signin(){
           <div className="w-1/2 text-center py-2  bg-[#2A2A2A] rounded-lg text-white font-semibold text-sm">
             <Link to={"/signin"}>
               Sign in
-            </Link>
-            
+            </Link>            
           </div>
           <div className="w-1/2 text-center py-2 text-[#8A8A8A] text-sm font-semibold">
             <Link to={"/signup"}>
@@ -63,9 +105,20 @@ export default function Signin(){
           placeholder="******"
         />
 
-        <button className="bg-white rounded-md my-4 py-2.5 text-sm font-semibold tracking-tight cursor-pointer">
-          Sign in to UMBRELLA
+        <button 
+        onClick={OnClickSignin}
+        className="bg-white rounded-md mt-4 my-2 py-2.5 text-sm font-semibold tracking-tight cursor-pointer flex justify-center items-center">
+          {
+            isLoaderActive ? <LoaderWhite/> : <>Sign in to UMBRELLA</>
+          }
         </button>
+
+        {
+          isErrorActive &&
+          <p className="text-center text-red-400 text-sm my-2 max-w-xs text-wrap overflow-hidden">
+            {errorMessage}
+          </p>
+        }
 
         <span className="text-sm text-center text-[#555555]">
           <p>Dont have an account? 

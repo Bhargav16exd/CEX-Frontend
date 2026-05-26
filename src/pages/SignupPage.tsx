@@ -46,7 +46,6 @@ export default function Signup(){
 
 
   async function OnClickSignup(){
-
     setLoaderActive(true);
 
     if(!inputs.username || !inputs.password || !inputs.confirmPassword){
