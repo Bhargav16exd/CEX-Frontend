@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputLabelComponent from "../components/InputLabelComponent";
 import { Link, useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signup } from "../redux/slices/authenticationSlice";
 import type { AppDispatch } from "../redux/store";
 import LoaderWhite from "../components/WhiteLoaderCompoenet";
@@ -12,6 +12,7 @@ export default function Signup(){
 
   const dispatch = useDispatch<AppDispatch>();
   const [isLoaderActive, setLoaderActive] = useState(false);
+  const { token } = useSelector((state:any)=>state.auth);
   const [isErrorActive, setErrorActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -69,6 +70,13 @@ export default function Signup(){
     }
 
   }
+
+  useEffect(()=>{
+      if(token){
+        navigate("/dashboard");
+        return
+      }
+    },[])
 
   return(
     <div className="h-screen w-screen bg-[#0A0A0A] flex justify-center items-center tracking-tight">

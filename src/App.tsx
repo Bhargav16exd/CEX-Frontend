@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage'
 import Signin from './pages/SigninPage'
 import Signup from './pages/SignupPage'
 import { DashboardPage } from './pages/Dashboard'
+import Auth from './utils/Auth'
 
 
 function App() {
@@ -16,8 +17,9 @@ function App() {
       <Route path='/signup' element={<Signup/>}></Route>
 
       {/* Secured Routes */}
-      <Route path='/dashboard' element={<DashboardPage/>}></Route>
-
+      <Route element={<Auth/>}>
+        <Route path='/dashboard' element={<DashboardPage/>}></Route>
+      </Route>
     </Routes>
   )
 }
