@@ -1,7 +1,33 @@
 import { useNavigate } from "react-router";
 import NavigationLayout from "../components/NavigationComponent";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { getPerpStocks, getSpotStocks } from "../redux/slices/stockSlice";
+import type { AppDispatch } from "../redux/store";
+import LoaderWhite from "../components/WhiteLoaderCompoenet";
 
 export function DashboardPage(){
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [spotStocks, setSpotStocks] = useState([]);
+  const [perpStocks, setPerpStocks] = useState([]);
+
+
+  async function fetchOrders(){
+    const spotStocksResponse = await dispatch(getSpotStocks({}))
+    const perpStocksResponse = await dispatch(getPerpStocks({}))
+
+    setPerpStocks(perpStocksResponse.payload?.data);
+    setSpotStocks(spotStocksResponse.payload?.data)
+
+  }
+
+  useEffect(() =>{
+    fetchOrders();
+  },[])
+
+
   return(
     <NavigationLayout>
       <div className="min-h-screen min-w-screen bg-[#0A0A0A] tracking-tight">
@@ -45,8 +71,8 @@ export function DashboardPage(){
         </div>
 
         <div className="px-9 py-8 flex gap-6 w-full text-white">
-          <SpotComponent/>
-          <PerpComponent/>
+          <SpotComponent stocks={spotStocks}/>
+          <PerpComponent stocks={perpStocks}/>
        </div>
 
       </div>
@@ -54,7 +80,7 @@ export function DashboardPage(){
   )
 }
 
-function SpotComponent(){
+function SpotComponent({stocks}:any){
 
   const navigate = useNavigate()
 
@@ -81,9 +107,16 @@ function SpotComponent(){
             <p className="w-[20%] flex justify-end">24H CHANGE</p>
             <p className="w-[20%] flex justify-end">VOLUME</p>
           </div>
-          <StockItem/>
-          <StockItem/>
-          <StockItem/>
+
+          {
+              stocks.length > 0 ? 
+              stocks.map((stock:any)=>{
+                return <StockItem title={stock.title} market={"SPOT"}/>
+              })
+              :
+              <div className="flex justify-center items-center my-4"><LoaderWhite/></div>
+            }
+
 
           <span className="flex items-center gap-2 p-4">
             <span className="h-1 w-1 animate-ping rounded-full bg-red-600 "></span>
@@ -95,7 +128,8 @@ function SpotComponent(){
   )
 }
 
-function PerpComponent(){
+function PerpComponent({stocks}:any){
+
   const navigate = useNavigate()
   function OnCreateStockButtonClick(){
     navigate("/create-stock")
@@ -119,13 +153,16 @@ function PerpComponent(){
         <p className="w-[20%] flex justify-end">FUNDING RATE</p>
         <p className="w-[20%] flex justify-end">VOLUME</p>
       </div>
-      
-      <StockItem/>
-      <StockItem/>
-      <StockItem/>
-      <StockItem/>
-      <StockItem/>
 
+      {
+        stocks.length > 0 ? 
+        stocks.map((stock:any)=>{
+          return <StockItem title={stock.title} market={"PERP"}/>
+        })
+        :
+        <div className="flex justify-center items-center my-4"><LoaderWhite/></div>
+      }
+      
       <span className="flex items-center gap-2 p-4">
         <span className="h-1 w-1 animate-ping rounded-full bg-red-600 "></span>
         <p className="text-[#555555] text-xs">
@@ -137,10 +174,11 @@ function PerpComponent(){
   )
 }
 
-function StockItem(){
+function StockItem({title,market}:{title:string, market:string}){
+  console.log(title,market)
   return(
     <div className="flex px-4 py-4 border-[#252525] border-b-2 w-full">
-      <p className="w-[40%] text-sm font-semibold">BTC-SPOT</p>
+      <p className="w-[40%] text-sm font-semibold">{title}-{market}</p>
       <p className="w-[20%] text-sm font-mono flex justify-end ">$67,412.00</p>
       <p className="w-[20%] text-sm font-mono text-green-400 flex justify-end">+2.41%</p>
       <p className="w-[20%] text-sm font-mono flex justify-end">$892M</p>

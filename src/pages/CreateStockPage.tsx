@@ -42,7 +42,7 @@ export default function CreateStockPage(){
     setPerpMarketSelected(false);
     setInputs({
       ...input,
-      market:"SPOT"
+      market:"spot"
     })
   }
 
@@ -54,7 +54,7 @@ export default function CreateStockPage(){
     setPerpMarketSelected(true);
     setInputs({
       ...input,
-      market:"PERPETUAL"
+      market:"perp"
     })
   }
 
@@ -106,9 +106,9 @@ export default function CreateStockPage(){
       navigate("/dashboard")
 
     } catch (error:any) {
-      if(error?.response?.data?.statusCode == 403){
+      if(error.status == 403){
         localStorage.removeItem("token");
-        return
+        navigate("/signin")
       }
       popError(error.message)
     }

@@ -26,6 +26,48 @@ const createStock = createAsyncThunk(
   }
 )
 
+const getSpotStocks = createAsyncThunk(
+  'market/spot-stocks',
+  async function(_:any,{rejectWithValue}) {
+    try {
+      const response = await axios.get(`${BACKEND_BASE_URL}/market/stocks/spot`, {
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      return response.data
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        return rejectWithValue({
+          status:error?.response?.data?.statusCode,
+          message:error?.response?.data?.message
+        })
+      }
+    }
+  }
+)
+
+const getPerpStocks = createAsyncThunk(
+  'market/perp-stocks',
+  async function(_:any,{rejectWithValue}) {
+    try {
+      const response = await axios.get(`${BACKEND_BASE_URL}/market/stocks/perp`, {
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      return response.data
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        return rejectWithValue({
+          status:error?.response?.data?.statusCode,
+          message:error?.response?.data?.message
+        })
+      }
+    }
+  }
+)
+
 const stockSlice = createSlice({
   name:"Stock",
   initialState,
@@ -33,6 +75,9 @@ const stockSlice = createSlice({
 })
 
 export default stockSlice.reducer
+
 export {
-  createStock
+  createStock,
+  getSpotStocks,
+  getPerpStocks
 }
