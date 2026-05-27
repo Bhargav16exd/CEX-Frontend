@@ -43,7 +43,95 @@ export function DashboardPage(){
 
         </div>
 
+        <div className="px-9 py-8 flex gap-6 w-full text-white">
+          <SpotComponent/>
+          <PerpComponent/>
+       </div>
+
       </div>
     </NavigationLayout>
+  )
+}
+
+function SpotComponent(){
+  return(
+    <div className="border-[#252525] border-2 rounded-xl w-1/2 bg-[#111111]">
+
+          <span className="flex px-4 py-4 border-[#252525] border-b-2">
+            <span className="flex w-1/2 gap-4 items-center">
+              <h1 className="text-md font-semibold">Spot</h1>
+              <p className="text-xs text-green-400 bg-green-950 border border-green-700 py-1 px-3 rounded-full font-semibold"> SPOT</p>    
+            </span>
+            <span className="flex w-1/2 justify-end items-center gap-4">
+              <p className="text-[#555555] gap-8 text-xs">14 Stocks</p>
+              <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2">+ Add</button>
+            </span>
+          </span>
+          <div className="flex px-4 py-2 bg-[#0A0A0A] text-[#555555] text-xs border-[#252525] border-b-2 w-full">
+            <p className="w-[40%]">PAIR</p>
+            <p className="w-[20%] flex justify-end ">PRICE</p>
+            <p className="w-[20%] flex justify-end">24H CHANGE</p>
+            <p className="w-[20%] flex justify-end">VOLUME</p>
+          </div>
+          <StockItem/>
+          <StockItem/>
+          <StockItem/>
+
+          <span className="flex items-center gap-2 p-4">
+            <span className="h-1 w-1 animate-ping rounded-full bg-red-600 "></span>
+            <p className="text-[#555555] text-xs">
+              Market Rates are eventually updated, for latest price check market page
+            </p>
+          </span>
+        </div>
+  )
+}
+
+function PerpComponent(){
+  return(
+    <div className="border-[#252525] border-2 rounded-xl w-1/2 bg-[#111111]">
+
+      <span className="flex px-4 py-4 border-[#252525] border-b-2">
+        <span className="flex w-1/2 gap-4 items-center">
+          <h1 className="text-md font-semibold">Perpetuals</h1>
+          <p className="text-xs text-blue-400 bg-blue-950 border border-blue-700 py-1 px-4 rounded-full font-semibold"> PERP</p>    
+        </span>
+          <span className="flex w-1/2 justify-end items-center gap-4">
+          <p className="text-[#555555] gap-8 text-xs">14 Stocks</p>
+          <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2">+ Add</button>
+        </span>
+      </span>
+      <div className="flex px-4 py-2 bg-[#0A0A0A] text-[#555555] text-xs border-[#252525] border-b-2 w-full">
+        <p className="w-[40%]">PAIR</p>
+        <p className="w-[20%] flex justify-end ">MARK PRICE</p>
+        <p className="w-[20%] flex justify-end">FUNDING RATE</p>
+        <p className="w-[20%] flex justify-end">VOLUME</p>
+      </div>
+      
+      <StockItem/>
+      <StockItem/>
+      <StockItem/>
+      <StockItem/>
+      <StockItem/>
+
+      <span className="flex items-center gap-2 p-4">
+        <span className="h-1 w-1 animate-ping rounded-full bg-red-600 "></span>
+        <p className="text-[#555555] text-xs">
+          Market Rates are eventually updated, for latest price check market page
+        </p>
+      </span>
+    </div>
+
+  )
+}
+
+function StockItem(){
+  return(
+    <div className="flex px-4 py-4 border-[#252525] border-b-2 w-full">
+      <p className="w-[40%] text-sm font-semibold">BTC-SPOT</p>
+      <p className="w-[20%] text-sm font-mono flex justify-end ">$67,412.00</p>
+      <p className="w-[20%] text-sm font-mono text-green-400 flex justify-end">+2.41%</p>
+      <p className="w-[20%] text-sm font-mono flex justify-end">$892M</p>
+    </div>
   )
 }
