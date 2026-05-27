@@ -5,6 +5,7 @@ import Signin from './pages/SigninPage'
 import Signup from './pages/SignupPage'
 import { DashboardPage } from './pages/Dashboard'
 import Auth from './utils/Auth'
+import CreateStockPage from './pages/CreateStockPage'
 
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
 
       {/* Secured Routes */}
       <Route element={<Auth/>}>
-        <Route path='/dashboard' element={<DashboardPage/>}></Route>
+        <Route path='/dashboard'    element={<DashboardPage/>}></Route>
+        <Route path='/create-stock' element={<CreateStockPage/>}></Route>
       </Route>
     </Routes>
   )

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import NavigationLayout from "../components/NavigationComponent";
 
 export function DashboardPage(){
@@ -54,6 +55,13 @@ export function DashboardPage(){
 }
 
 function SpotComponent(){
+
+  const navigate = useNavigate()
+
+  function OnCreateStockButtonClick(){
+    navigate("/create-stock")
+  }
+
   return(
     <div className="border-[#252525] border-2 rounded-xl w-1/2 bg-[#111111]">
 
@@ -64,7 +72,7 @@ function SpotComponent(){
             </span>
             <span className="flex w-1/2 justify-end items-center gap-4">
               <p className="text-[#555555] gap-8 text-xs">14 Stocks</p>
-              <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2">+ Add</button>
+              <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer" onClick={OnCreateStockButtonClick}>+ Add</button>
             </span>
           </span>
           <div className="flex px-4 py-2 bg-[#0A0A0A] text-[#555555] text-xs border-[#252525] border-b-2 w-full">
@@ -88,6 +96,10 @@ function SpotComponent(){
 }
 
 function PerpComponent(){
+  const navigate = useNavigate()
+  function OnCreateStockButtonClick(){
+    navigate("/create-stock")
+  }
   return(
     <div className="border-[#252525] border-2 rounded-xl w-1/2 bg-[#111111]">
 
@@ -98,7 +110,7 @@ function PerpComponent(){
         </span>
           <span className="flex w-1/2 justify-end items-center gap-4">
           <p className="text-[#555555] gap-8 text-xs">14 Stocks</p>
-          <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2">+ Add</button>
+          <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer" onClick={OnCreateStockButtonClick}>+ Add</button>
         </span>
       </span>
       <div className="flex px-4 py-2 bg-[#0A0A0A] text-[#555555] text-xs border-[#252525] border-b-2 w-full">
