@@ -99,10 +99,9 @@ export default function CreateStockPage(){
     }
 
     try {
-      const res = await dispatch(createStock(input)).unwrap()
+      await dispatch(createStock(input)).unwrap()
       setLoaderActive(false);
-      console.log(res)
-
+      //tbd
       navigate("/dashboard")
 
     } catch (error:any) {

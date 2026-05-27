@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import NavigationLayout from "../components/NavigationComponent";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -103,7 +103,7 @@ function SpotComponent({stocks}:any){
           </span>
           <div className="flex px-4 py-2 bg-[#0A0A0A] text-[#555555] text-xs border-[#252525] border-b-2 w-full">
             <p className="w-[40%]">PAIR</p>
-            <p className="w-[20%] flex justify-end ">PRICE</p>
+            <p className="w-[20%] flex justify-end ">SYMBOL</p>
             <p className="w-[20%] flex justify-end">24H CHANGE</p>
             <p className="w-[20%] flex justify-end">VOLUME</p>
           </div>
@@ -111,7 +111,7 @@ function SpotComponent({stocks}:any){
           {
               stocks.length > 0 ? 
               stocks.map((stock:any)=>{
-                return <StockItem title={stock.title} market={"SPOT"}/>
+                return <StockItem title={stock.title} market={"SPOT"} symbol={stock.symbol}/>
               })
               :
               <div className="flex justify-center items-center my-4"><LoaderWhite/></div>
@@ -149,7 +149,7 @@ function PerpComponent({stocks}:any){
       </span>
       <div className="flex px-4 py-2 bg-[#0A0A0A] text-[#555555] text-xs border-[#252525] border-b-2 w-full">
         <p className="w-[40%]">PAIR</p>
-        <p className="w-[20%] flex justify-end ">MARK PRICE</p>
+        <p className="w-[20%] flex justify-end ">SYMBOL</p>
         <p className="w-[20%] flex justify-end">FUNDING RATE</p>
         <p className="w-[20%] flex justify-end">VOLUME</p>
       </div>
@@ -157,7 +157,7 @@ function PerpComponent({stocks}:any){
       {
         stocks.length > 0 ? 
         stocks.map((stock:any)=>{
-          return <StockItem title={stock.title} market={"PERP"}/>
+          return <StockItem title={stock.title} market={"PERP"} symbol={stock.symbol}/>
         })
         :
         <div className="flex justify-center items-center my-4"><LoaderWhite/></div>
@@ -174,14 +174,15 @@ function PerpComponent({stocks}:any){
   )
 }
 
-function StockItem({title,market}:{title:string, market:string}){
-  console.log(title,market)
+function StockItem({title,market,symbol}:{title:string, market:string, symbol:string}){
   return(
-    <div className="flex px-4 py-4 border-[#252525] border-b-2 w-full">
+    <Link to={`/perp/${symbol}`}>
+    <div className="flex px-4 py-4 border-[#252525] border-b-2 w-full hover:bg-[#222222] cursor-pointer">
       <p className="w-[40%] text-sm font-semibold">{title}-{market}</p>
-      <p className="w-[20%] text-sm font-mono flex justify-end ">$67,412.00</p>
+      <p className="w-[20%] text-sm font-mono flex justify-end ">{symbol}</p>
       <p className="w-[20%] text-sm font-mono text-green-400 flex justify-end">+2.41%</p>
       <p className="w-[20%] text-sm font-mono flex justify-end">$892M</p>
     </div>
+    </Link>
   )
 }
