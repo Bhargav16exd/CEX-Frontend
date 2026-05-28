@@ -26,7 +26,24 @@ const getBalance = createAsyncThunk(
 )
 
 const getOrderbook = createAsyncThunk(
-  ''
+  'perp/depth',
+  async function (stockSymbol:any,{rejectWithValue}) {
+    try {
+      const response = await axios.get(`${BACKEND_BASE_URL}/stock/perpetual/depth/${stockSymbol}`,{
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      return response.data
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        return rejectWithValue({
+          status:error?.response?.data?.statusCode,
+          message:error?.response?.data?.message
+        })
+      }
+    }    
+  }
 )
 
 const placePerpOrder = createAsyncThunk(
@@ -38,7 +55,7 @@ const placePerpOrder = createAsyncThunk(
           'Authorization':`Bearer ${localStorage.getItem("token")}`
         }
       });
-      return response
+      return response.data
     } catch (error) {
       if(axios.isAxiosError(error)){
         return rejectWithValue({
