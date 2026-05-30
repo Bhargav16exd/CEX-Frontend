@@ -6,10 +6,11 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
 import { getBalance, getOrderbook, placePerpOrder } from "../redux/slices/perpSlice";
 import LoaderWhite from "../components/WhiteLoaderCompoenet";
-import { CandlestickSeries, ColorType, createChart, type UTCTimestamp } from "lightweight-charts";
-import { candleData } from "./Data";
+import CandleComponent from "../components/CandleComponent";
+import { Orderbook } from "../components/OrderbookComponent";
+import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
 
-type Orderbook = {
+export type Orderbook = {
   updateId:number
   asks:OrderbookLevel[],
   bids:OrderbookLevel[],
@@ -28,8 +29,6 @@ interface WsDepthData {
 
 // Types
 type OrderbookLevel = [number, number]; // [price, quantity]
-
-
 
 export function PerpStockPage(){
   // ------- UTILITY SECTION -------
@@ -50,6 +49,41 @@ export function PerpStockPage(){
       setErrorMessage("");
     }, 5000)
   }
+
+  // ------- HISTORY SECTION ---------
+  const [isOpenOrderActive, setIsOpenOrderActive] = useState(true);
+  const [isPositionActive, setIsPositionActive] = useState(false);
+  const [isFillsActive, setIsFillsActive] = useState(false);
+  const [isOrderHistoryActive, setIsOrderHistoryActive] = useState(false);
+
+  function OnClickOpenOrder(){
+    setIsOpenOrderActive(true);
+    setIsPositionActive(false);
+    setIsFillsActive(false);
+    setIsOrderHistoryActive(false);
+  }
+  
+  function OnClickPosition(){
+    setIsOpenOrderActive(false);
+    setIsPositionActive(true);
+    setIsFillsActive(false);
+    setIsOrderHistoryActive(false);
+  }
+  
+  function OnClickFills(){
+    setIsOpenOrderActive(false);
+    setIsPositionActive(false);
+    setIsFillsActive(true);
+    setIsOrderHistoryActive(false);
+  }
+  
+  function OnClickOrderHistory(){
+    setIsOpenOrderActive(false);
+    setIsPositionActive(false);
+    setIsFillsActive(false);
+    setIsOrderHistoryActive(true);
+  }
+
 
   // ------- ORDERBOOK SECTION ---------
   const [orderbook, setOrderbook] = useState<Orderbook>({
@@ -307,6 +341,37 @@ export function PerpStockPage(){
             </div>
             <Orderbook Orderbook={orderbook}/>
           </div>
+          
+          <div className="flex flex-col">
+            <span className="flex border border-[#252525] text-[#A1A1A1] px-10 gap-8 text-sm tracking-tight">
+              <div 
+              onClick={OnClickOpenOrder}
+              className={`py-2 px-4 cursor-pointer ${isOpenOrderActive && "border-b-2 border-white text-white"}`}>Open Orders</div>
+              <div 
+              onClick={OnClickPosition}
+              className={`py-2 px-4 cursor-pointer ${isPositionActive && "border-b-2 border-white text-white"}`}>Positions</div>
+              <div 
+              onClick={OnClickFills}
+              className={`py-2 px-4 cursor-pointer ${isFillsActive && "border-b-2 border-white text-white"}`}>Fills</div>
+              <div 
+              onClick={OnClickOrderHistory}
+              className={`py-2 px-4 cursor-pointer ${isOrderHistoryActive && "border-b-2 border-white text-white"}`}>Order History</div>
+            </span>
+            {
+              isOpenOrderActive && <OpenOrdersComponent/>
+            }
+            {
+              isPositionActive && <OpenPositionsComponent/>
+            }
+            {
+              isFillsActive && <FillHistoryComponent/>
+            }
+            {
+              isOrderHistoryActive && <OrderHistoryComponent/>
+            }
+
+          </div>
+
         </div>
 
         {/* ------- LONG OR SHORT SECTION -------*/}
@@ -413,122 +478,214 @@ export default function InputLabelComponent({labelName,value,handleChange,name,i
   )
 }
 
+function OpenOrdersComponent(){
+  return(<>Open Orders</>)
+}
 
-function Orderbook({Orderbook}:{Orderbook:Orderbook}){
+function OpenPositionsComponent(){
+  return(<>Open Positions</>)
+}
 
-  function enrichLevels(levels:[number, number][]){
-    let total = 0;
-    return levels.map(([price, quantity])=>{
-      total = total + quantity;
-      return {price , quantity, total};
-    })
+function FillHistoryComponent(){
+
+  const {stockSymbol} = useParams()
+
+  const dispatch = useDispatch<AppDispatch>();
+  const [fills, setFills] = useState([]);
+  const [offset, setOffset] = useState(0);
+
+  function NextPage(){
+    const value = offset
+    setOffset(value + 5)
   }
 
-  const sortedAsks = [...Orderbook.asks].sort((a, b) => a[0] - b[0]);
-  const sortedBids = [...Orderbook.bids].sort((a, b) => b[0] - a[0]);
+  function PrevPage(){
+    if(offset === 0) return;
+    const value = offset
+    setOffset(value - 5)
+  }
 
-  const enrichAsks = enrichLevels(sortedAsks);
-  const enrichBids = enrichLevels(sortedBids);
+  async function fetchFill(){
+    try {
+      
+      const requestPayload = {
+        count:"5",
+        offset:offset.toString(),
+        market:"perp",
+        symbol:stockSymbol!
+      }
 
-  const maxTotal = Math.max(enrichAsks.at(-1)?.total ?? 0, enrichBids.at(-1)?.total ?? 0)
+      const response = await dispatch(fetchFills(requestPayload)).unwrap()
+      setFills(response?.data)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    fetchFill()
+  },[offset])
+
 
   return(
-    <div className="w-[25%] border-[#252525]  border-b-2 ">
-
-        <div className="w-full p-4 flex justify-between items-center border-[#252525] border-b-2">
-          <p className="font-sm font-semibold">Orderbook</p>
-          <p className="text-xs text-[#383838]">Depth</p>
-        </div>
-
-        <div className="flex px-4 py-2 text-sm text-[#383838] border-[#252525] border-b-2">
-          <p className="w-[40%]">Price</p>
-          <p className="w-[30%] flex justify-end">Size</p>
-          <p className="w-[30%] flex justify-end">Total</p>
-        </div>
+    <div className="mb-10">
       
-        {/* Render Asks */}
-        <div className="flex flex-col-reverse font-mono">
-          {
-            enrichAsks.map(({price, quantity, total})=>(
-              <div key={price} className="relative flex px-4 py-1 text-xs text-[#A1A1A1] my-0.5">
-                <div 
-                style={{width:`${((total/maxTotal)*100)}%`}}
-                className="absolute inset-y-0 right-0 bg-red-400/10"></div>
-                <div 
-                style={{width:`${((quantity/maxTotal)*100)}%`}}
-                className="absolute inset-y-0 right-0 bg-red-500/70"></div>
-                <p className="w-[40%] text-red-400">{price}</p>
-                <p className="w-[30%] flex justify-end">{quantity}</p>
-                <p className="w-[30%] flex justify-end">{total}</p>
-              </div>
-            ))
-          }
-        </div>
+      <div className="flex w-full border-[#252525] border-b text-[#414141] px-14 py-1 text-xs">
+        <span className="w-[15%]">Market</span>
+        <span className="w-[10%]">Side</span>
+        <span className="w-[10%]">Price</span>
+        <span className="w-[15%]">Quantity</span>
+        <span className="w-[10%]">Fee</span>
+        <span className="w-[10%]">Role</span>
+        <span className="w-[15%]">Time</span>
         
-        <div className="px-4 py-2 text-xs text-[#383838] border-t border-b">
-          <p>Spread : $ {enrichAsks[0]?.price - enrichBids[0]?.price}</p>
-        </div>
+      </div>
+      <div >
+        {
+          fills.length > 0 ?
+          fills.map((fill:any)=>(
+            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
+              <span className="w-[15%]">PERP-{fill.symbol.toUpperCase()}</span>
+              <span className="w-[10%]">{fill.side}</span>
+              <span className="w-[10%]">{fill.price}</span>
+              <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
+              <span className="w-[10%]">0</span>
+              <span className="w-[10%]">{fill.role}</span>
+              <span className="w-[15%]">{new Date(fill.createdAt).toLocaleString("en-us",{
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })}</span>
+            </div>    
+          ))
+          :
+          <div className="flex justify-center items-center py-10">
+            <LoaderWhite/>
+          </div>
+        }
+      </div>
 
-        {/* Render Bids */}
-        <div className="flex flex-col font-mono">
-          {
-            enrichBids.map(({price, quantity, total})=>(
-              <div  key={price} className="relative flex px-4 py-1 text-xs text-white my-0.5">
-                <div 
-                style={{width:`${((total/maxTotal)*100)}%`}}
-                className="absolute inset-y-0 right-0 bg-green-400/10"></div>
-                <div 
-                style={{width:`${((quantity/maxTotal)*100)}%`}}
-                className="absolute inset-y-0 right-0 bg-green-500/70"></div>
-                <p className="w-[40%] text-green-400">{price}</p>
-                <p className="w-[30%] flex justify-end">{quantity}</p>
-                <p className="w-[30%] flex justify-end">{total}</p>
-              </div>
-            ))
-          }
-        </div>
-
+      <div className="flex justify-end items-center gap-10 py-6 px-6">
+        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
+          Prev
+        </button>
+        <p className="text-gray-400 text-sm">
+          {offset}
+        </p>
+        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
+          Next
+        </button>
+      </div>
     </div>
   )
 }
 
-function CandleComponent(){
+function OrderHistoryComponent(){
 
-  const chartContainerRef = useRef(null);
-  
+  const {stockSymbol} = useParams()
+
+  const dispatch = useDispatch<AppDispatch>();
+  const [orders, setOrders] = useState([]);
+  const [offset, setOffset] = useState(0);
+
+  function NextPage(){
+    const value = offset
+    setOffset(value + 5)
+  }
+
+  function PrevPage(){
+    if(offset === 0) return;
+    const value = offset
+    setOffset(value - 5)
+  }
+
+  async function fetch(){
+    try {
+      
+      const requestPayload = {
+        count:"5",
+        offset:offset.toString(),
+        market:"perp",
+        symbol:stockSymbol!
+      }
+
+      const response = await dispatch(fetchOrders(requestPayload)).unwrap()
+
+      setOrders(response?.data)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(()=>{
-    if(!chartContainerRef.current) return
+    setOrders([]);
+    fetch()
+  },[offset])
 
-    const chartOptions = { 
-      height:500,
-      grid : { 
-        vertLines: { color: '#0A0A0A' },
-        horzLines: { color: '#555555' }
-      },
-      rightPriceScale: {
-        borderColor: '#0A0A0A',
-      },
-      timeScale: {
-        borderColor: '#0A0A0A',
-      },
-      layout: { textColor: '#555555', background: { type: ColorType.Solid, color: '#0A0A0A' }, } }
-    
-    const chart = createChart(chartContainerRef.current, chartOptions)
-
-    const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#21C55E', downColor: '#E34242', borderVisible: false,
-      wickUpColor: '#21C55E', wickDownColor: '#E34242',
-    });
-
-   candlestickSeries.setData(candleData);
-
-   chart.timeScale().fitContent();
-
-   return () => chart.remove()
-
-  },[])
 
   return(
-    <div ref={chartContainerRef} className="w-full "></div>
+    <div className="mb-10">
+      
+      <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
+        <span className="w-[15%]">MARKET</span>
+        <span className="w-[10%]">SIDE</span>
+        <span className="w-[10%]">TYPE</span>
+        <span className="w-[10%]">PRICE</span>
+        <span className="w-[15%]">QTY</span>
+        <span className="w-[15%]">STATUS</span>
+        <span className="w-[15%]">TIME</span>
+        
+      </div>
+      <div >
+        {
+          orders.length > 0 ?
+          orders.map((order:any)=>(
+            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
+              <span className="w-[15%]">PERP-{order.symbol.toUpperCase()}</span>
+              <span className="w-[10%]">{order.side}</span>
+              <span className="w-[10%]">{order.type}</span>
+              <span className="w-[10%]">{order.price}</span>
+              <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
+              <span className={`w-[15%] 
+                ${order.status === "closed" && "text-green-400" }
+                ${order.status === "open" && "text-yellow-400"}
+                `}
+                
+                >{order.status}</span>
+              <span className="w-[15%]">{new Date(order.createdAt).toLocaleString("en-us",{
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second:'2-digit',
+                hour12: false,
+              })}</span>
+            </div>    
+          ))
+          :
+          <div className="flex justify-center items-center py-10">
+            <LoaderWhite/>
+          </div>
+        }
+      </div>
+
+      <div className="flex justify-end items-center gap-10 py-6 px-6">
+        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
+          Prev
+        </button>
+        <p className="text-gray-400 text-sm">
+          {offset}
+        </p>
+        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
+          Next
+        </button>
+      </div>
+    </div>
   )
 }
+
+
