@@ -1,16 +1,35 @@
 import { useNavigate, useParams } from "react-router";
 import NavigationLayout from "../components/NavigationComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { InputLabelComponent } from "../components/InputLabelComponent";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
 import { getBalance, getOrderbook, placePerpOrder } from "../redux/slices/perpSlice";
 import LoaderWhite from "../components/WhiteLoaderCompoenet";
+import { CandlestickSeries, ColorType, createChart, type UTCTimestamp } from "lightweight-charts";
+import { candleData } from "./Data";
 
 type Orderbook = {
-  asks:Array<any>,
-  bids:Array<any>
+  updateId:number
+  asks:OrderbookLevel[],
+  bids:OrderbookLevel[],
 }
+
+interface WsResponse {
+  type:string,
+  data:WsDepthData
+}
+
+interface WsDepthData {
+  asks:OrderbookLevel[],
+  bids:OrderbookLevel[],
+  updateId:number
+}
+
+// Types
+type OrderbookLevel = [number, number]; // [price, quantity]
+
+
 
 export function PerpStockPage(){
   // ------- UTILITY SECTION -------
@@ -33,10 +52,17 @@ export function PerpStockPage(){
   }
 
   // ------- ORDERBOOK SECTION ---------
-  const [orderbook, setOrderbook] = useState({
+  const [orderbook, setOrderbook] = useState<Orderbook>({
+    updateId:0,
     bids:[],
     asks:[]
   })
+  const [isSync, setIsSync] = useState(false);
+
+  const isSyncRef = useRef(false);
+  const snapshotRef = useRef<Orderbook | null>(null);
+  const bufferedUpdateRef = useRef<WsDepthData[]>([]);
+  const updatedIdRef = useRef<number>(0);
 
   // ------- PAGE SEPECIFIC SECTION -------
   const [isLongSectionActive, setIsLongSectionActive] = useState(true);
@@ -140,10 +166,7 @@ export function PerpStockPage(){
   async function GetOrderbook(){
     try {
       const response = await dispatch(getOrderbook(stockSymbol)).unwrap()
-      setOrderbook({
-        bids:response.data.bids,
-        asks:response.data.asks
-      })
+      return response.data
     } catch (error:any) {
       if(error.status == 403){
         localStorage.removeItem("token");
@@ -152,11 +175,118 @@ export function PerpStockPage(){
     }
   }
 
+  function applyUpdate(
+    current: Orderbook,
+    update: WsDepthData,
+  ){
+    const mergeLevels = (
+      existing: OrderbookLevel[],
+      incoming: OrderbookLevel[]
+    ) => {
+
+      const existingmap = new Map(existing.map(([p,q])=> [p,q]));
+      
+      for(const [price, qty] of incoming){
+        if (Number(qty) === 0) {
+          existingmap.delete(Number(price));
+        } else {
+          existingmap.set(Number(price), Number(qty));
+        }
+      }
+
+      return Array.from(existingmap.entries()).map(([p, q]) => [p, q] as OrderbookLevel);
+    }
+
+    return {
+      updateId:update.updateId,
+      bids: mergeLevels(current.bids, update.bids),
+      asks: mergeLevels(current.asks, update.asks)
+    }
+  }
+
+  function syncFromSnapshot(snapshot: Orderbook, buffered:WsDepthData[]){
+    const relevant = buffered.filter((u)=> u.updateId > snapshot.updateId);
+
+    let book = snapshot;
+
+    for(const update of relevant){
+      book = applyUpdate(book, update);
+    }
+
+    updatedIdRef.current = book.updateId;
+    snapshotRef.current = book;
+    isSyncRef.current = true;
+    setIsSync(true);
+    setOrderbook(book);
+  }
+
+  function handleOrderbookSync(snapshot: Orderbook){
+    snapshotRef.current = snapshot;
+    syncFromSnapshot(snapshot, bufferedUpdateRef.current);
+    bufferedUpdateRef.current = [];
+  }
+
+  async function EstablishWsConnection(){
+    const ws = new WebSocket("ws://localhost:8082");
+
+      ws.onopen = () => {
+        console.log("Connected to websocket server");
+        ws.send(
+          JSON.stringify({
+            type: "PING",
+          })
+        );
+      };
+
+      ws.onmessage = async (event) => {
+        const parsedEvent = JSON.parse(event.data) as WsResponse
+        const update = parsedEvent.data;
+
+        if(!isSyncRef.current){
+          bufferedUpdateRef.current.push(update);
+
+          if(bufferedUpdateRef.current.length === 1){
+            const snapshot = await GetOrderbook();
+            if(snapshot) handleOrderbookSync(snapshot); 
+          }
+        }
+
+        // Stale update — already applied
+        if (update.updateId <= updatedIdRef.current) return;
+
+        if(update.updateId != updatedIdRef.current + 1){
+          console.warn("Gap detected, re-syncing...");
+          isSyncRef.current = false;
+          setIsSync(false);
+          bufferedUpdateRef.current = [update]; 
+          const snapshot = await GetOrderbook();
+          if (snapshot) handleOrderbookSync(snapshot);
+          return;
+        }
+
+        setOrderbook((prev) => {
+          console.log("prev",prev)
+          console.log("update",update)
+          const next = applyUpdate(prev, update);
+          console.log("next",next)
+          updatedIdRef.current = next.updateId;
+          return next;
+        });
+
+      };
+
+      ws.onclose = () => {
+        console.log("Disconnected");
+      };
+
+      ws.onerror = (err) => {
+        console.log("WS ERROR", err);
+      };
+  }
+
   useEffect(()=>{
+    EstablishWsConnection();
     GetBalance();
-    GetOrderbook();
-    //create socket connection
-    //then get orderbook
   },[])
 
 
@@ -173,7 +303,7 @@ export function PerpStockPage(){
 
           <div className="flex w-full">
              <div className="w-[75%] border-[#252525] border-r-2">
-              hi
+              <CandleComponent/>
             </div>
             <Orderbook Orderbook={orderbook}/>
           </div>
@@ -294,8 +424,11 @@ function Orderbook({Orderbook}:{Orderbook:Orderbook}){
     })
   }
 
-  const enrichAsks = enrichLevels(Orderbook.asks);
-  const enrichBids = enrichLevels(Orderbook.bids);
+  const sortedAsks = [...Orderbook.asks].sort((a, b) => a[0] - b[0]);
+  const sortedBids = [...Orderbook.bids].sort((a, b) => b[0] - a[0]);
+
+  const enrichAsks = enrichLevels(sortedAsks);
+  const enrichBids = enrichLevels(sortedBids);
 
   const maxTotal = Math.max(enrichAsks.at(-1)?.total ?? 0, enrichBids.at(-1)?.total ?? 0)
 
@@ -356,5 +489,46 @@ function Orderbook({Orderbook}:{Orderbook:Orderbook}){
         </div>
 
     </div>
+  )
+}
+
+function CandleComponent(){
+
+  const chartContainerRef = useRef(null);
+  
+  useEffect(()=>{
+    if(!chartContainerRef.current) return
+
+    const chartOptions = { 
+      height:500,
+      grid : { 
+        vertLines: { color: '#0A0A0A' },
+        horzLines: { color: '#555555' }
+      },
+      rightPriceScale: {
+        borderColor: '#0A0A0A',
+      },
+      timeScale: {
+        borderColor: '#0A0A0A',
+      },
+      layout: { textColor: '#555555', background: { type: ColorType.Solid, color: '#0A0A0A' }, } }
+    
+    const chart = createChart(chartContainerRef.current, chartOptions)
+
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
+      upColor: '#21C55E', downColor: '#E34242', borderVisible: false,
+      wickUpColor: '#21C55E', wickDownColor: '#E34242',
+    });
+
+   candlestickSeries.setData(candleData);
+
+   chart.timeScale().fitContent();
+
+   return () => chart.remove()
+
+  },[])
+
+  return(
+    <div ref={chartContainerRef} className="w-full "></div>
   )
 }
