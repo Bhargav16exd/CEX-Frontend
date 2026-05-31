@@ -46,8 +46,7 @@ const authenticationSlice = createSlice({
   reducers:{},
   extraReducers:(builder:ActionReducerMapBuilder<any>)=>{
     builder
-    .addCase(signin.fulfilled, (state, action)=>{
-      state.token = action.payload?.data.data.token;
+    .addCase(signin.fulfilled, (_, action)=>{
       localStorage.setItem("token", action.payload?.data.data.token);
     })
   }

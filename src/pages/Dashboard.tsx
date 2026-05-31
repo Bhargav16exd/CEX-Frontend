@@ -140,7 +140,7 @@ function PerpComponent({stocks}:any){
       <span className="flex px-4 py-4 border-[#252525] border-b-2">
         <span className="flex w-1/2 gap-4 items-center">
           <h1 className="text-md font-semibold">Perpetuals</h1>
-          <p className="text-xs text-blue-400 bg-blue-950 border border-blue-700 py-1 px-4 rounded-full font-semibold"> PERP</p>    
+          <p className="text-xs text-blue-400 bg-blue-950 border border-blue-700 py-1 px-4 rounded-full font-semibold"> PERPETUAL</p>    
         </span>
           <span className="flex w-1/2 justify-end items-center gap-4">
           <p className="text-[#555555] gap-8 text-xs">14 Stocks</p>

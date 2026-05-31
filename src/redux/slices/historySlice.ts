@@ -46,6 +46,48 @@ const fetchOrders = createAsyncThunk(
   }
 )
 
+const fetchGlobalFills = createAsyncThunk(
+  'history/fills/symbol',
+  async function({count, offset, market}:{count:string,offset:string, market:string},{rejectWithValue}) {
+    try {
+      const response = await axios.get(`${BACKEND_BASE_URL}/history/fills/${market}?count=${count}&offset=${offset}`, {
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      return response.data
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        return rejectWithValue({
+          status:error?.response?.data?.statusCode,
+          message:error?.response?.data?.message
+        })
+      }
+    }
+  }
+)
+
+const fetchGlobalOrders = createAsyncThunk(
+  'history/fills/symbol',
+  async function({count, offset, market}:{count:string,offset:string, market:string},{rejectWithValue}) {
+    try {
+      const response = await axios.get(`${BACKEND_BASE_URL}/history/orders/${market}?count=${count}&offset=${offset}`, {
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      return response.data
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        return rejectWithValue({
+          status:error?.response?.data?.statusCode,
+          message:error?.response?.data?.message
+        })
+      }
+    }
+  }
+)
+
 const historySlice = createSlice({
   name:"history",
   initialState,
@@ -55,5 +97,7 @@ const historySlice = createSlice({
 export default historySlice.reducer
 export {
   fetchFills,
-  fetchOrders
+  fetchOrders,
+  fetchGlobalFills,
+  fetchGlobalOrders
 }
