@@ -3,7 +3,8 @@ import axios from "axios";
 import { BACKEND_BASE_URL } from "../../constants";
 
 const initialState:any = {
-  token: localStorage.getItem("token") || ""
+  token: localStorage.getItem("token") || "",
+  role: localStorage.getItem("role") || ""
 }
 
 const signup = createAsyncThunk(
@@ -46,8 +47,10 @@ const authenticationSlice = createSlice({
   reducers:{},
   extraReducers:(builder:ActionReducerMapBuilder<any>)=>{
     builder
-    .addCase(signin.fulfilled, (_, action)=>{
+    .addCase(signin.fulfilled, (state, action)=>{
       localStorage.setItem("token", action.payload?.data.data.token);
+      localStorage.setItem("role", action.payload?.data.data.role);
+      state.role = action.payload?.data.data.role
     })
   }
 })

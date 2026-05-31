@@ -1,10 +1,16 @@
 import { Link, useNavigate } from "react-router";
 import NavigationLayout from "../components/NavigationComponent";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getPerpStocks, getSpotStocks } from "../redux/slices/stockSlice";
 import type { AppDispatch } from "../redux/store";
 import LoaderWhite from "../components/WhiteLoaderCompoenet";
+
+//@ts-ignore
+enum Role {
+ ADMIN = "admin",
+ CLIENT = "client"
+}
 
 export function DashboardPage(){
 
@@ -82,7 +88,8 @@ export function DashboardPage(){
 
 function SpotComponent({stocks}:any){
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const role = useSelector((state:any)=>state.auth.role);
 
   function OnCreateStockButtonClick(){
     navigate("/create-stock")
@@ -98,7 +105,11 @@ function SpotComponent({stocks}:any){
             </span>
             <span className="flex w-1/2 justify-end items-center gap-4">
               <p className="text-[#555555] gap-8 text-xs">14 Stocks</p>
-              <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer" onClick={OnCreateStockButtonClick}>+ Add</button>
+              {
+                role && role == Role.ADMIN &&
+                <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer" onClick={OnCreateStockButtonClick}>+ Add</button>
+              }
+              
             </span>
           </span>
           <div className="flex px-4 py-2 bg-[#0A0A0A] text-[#555555] text-xs border-[#252525] border-b-2 w-full">
@@ -130,6 +141,8 @@ function SpotComponent({stocks}:any){
 
 function PerpComponent({stocks}:any){
 
+  const role = useSelector((state:any)=>state.auth.role)
+
   const navigate = useNavigate()
   function OnCreateStockButtonClick(){
     navigate("/create-stock")
@@ -144,7 +157,10 @@ function PerpComponent({stocks}:any){
         </span>
           <span className="flex w-1/2 justify-end items-center gap-4">
           <p className="text-[#555555] gap-8 text-xs">14 Stocks</p>
-          <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer" onClick={OnCreateStockButtonClick}>+ Add</button>
+          {
+            role && role == Role.ADMIN &&
+            <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer" onClick={OnCreateStockButtonClick}>+ Add</button>
+          }
         </span>
       </span>
       <div className="flex px-4 py-2 bg-[#0A0A0A] text-[#555555] text-xs border-[#252525] border-b-2 w-full">
@@ -157,7 +173,7 @@ function PerpComponent({stocks}:any){
       {
         stocks.length > 0 ? 
         stocks.map((stock:any)=>{
-          return <StockItem title={stock.title} market={"PERP"} symbol={stock.symbol}/>
+          return <StockItem key={stock.symbol} title={stock.title} market={"PERP"} symbol={stock.symbol}/>
         })
         :
         <div className="flex justify-center items-center my-4"><LoaderWhite/></div>

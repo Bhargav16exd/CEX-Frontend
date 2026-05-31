@@ -188,7 +188,7 @@ export function PerpStockPage(){
   async function GetBalance(){
     try {
       const response = await dispatch(getBalance({})).unwrap()
-      setBalance(response?.data.data.balance)
+      setBalance(response?.data.balance)
     } catch (error:any) {
       if(error.status == 403){
         localStorage.removeItem("token");
@@ -270,9 +270,15 @@ export function PerpStockPage(){
             type: "PING",
           })
         );
+
+        setTimeout(async ()=>{
+          const update = await GetOrderbook()
+          setOrderbook(update);
+        },500)
       };
 
       ws.onmessage = async (event) => {
+
         const parsedEvent = JSON.parse(event.data) as WsResponse
         const update = parsedEvent.data;
 
@@ -299,10 +305,7 @@ export function PerpStockPage(){
         }
 
         setOrderbook((prev) => {
-          console.log("prev",prev)
-          console.log("update",update)
           const next = applyUpdate(prev, update);
-          console.log("next",next)
           updatedIdRef.current = next.updateId;
           return next;
         });
@@ -395,10 +398,10 @@ export function PerpStockPage(){
               <div className="w-1/2 cursor-not-allowed flex justify-center items-center">Market</div>
             </span>
 
-            <p className="flex text-sm my-4 justify-between items-center">
+            <div className="flex text-sm my-4 justify-between items-center">
               <p className="text-[#555555]">Available Balance</p>
-              <p>${balance ? balance : <LoaderWhite/>}</p>
-            </p>
+              <div>${balance ? balance : <LoaderWhite/>}</div>
+            </div>
 
             <InputLabelComponent
               labelName="PRICE"

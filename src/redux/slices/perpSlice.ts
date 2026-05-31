@@ -13,7 +13,7 @@ const getBalance = createAsyncThunk(
           'Authorization':`Bearer ${localStorage.getItem("token")}`
         }
       });
-      return response
+      return response.data
     } catch (error) {
       if(axios.isAxiosError(error)){
         return rejectWithValue({

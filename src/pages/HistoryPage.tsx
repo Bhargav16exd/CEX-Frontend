@@ -210,8 +210,8 @@ function FillHistoryComponent(){
       <div >
         {
           fills.length > 0 ?
-          fills.map((fill:any)=>(
-            <div className="flex px-14 py-4 text-sm border-b border-[#252525] text-[#A1A1A1] font-mono justify-center items-center">
+          fills.map((fill:any,idx)=>(
+            <div key={idx} className="flex px-14 py-4 text-sm border-b border-[#252525] text-[#A1A1A1] font-mono justify-center items-center">
               <span className="w-[20%] flex justify-start items-center gap-2">
                 <img src={fetchLogo(fill.symbol.toUpperCase())} alt="logo" className="h-8"/>
                 <p>PERP-{fill.symbol.toUpperCase()}</p>
