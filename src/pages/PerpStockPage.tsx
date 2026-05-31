@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { InputLabelComponent } from "../components/InputLabelComponent";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
-import { getBalance, getOrderbook, placePerpOrder } from "../redux/slices/perpSlice";
+import { fetchOpenOrders, getBalance, getOrderbook, placePerpOrder } from "../redux/slices/perpSlice";
 import LoaderWhite from "../components/WhiteLoaderCompoenet";
 import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
@@ -349,7 +349,7 @@ export function PerpStockPage(){
               className={`py-2 px-4 cursor-pointer ${isOpenOrderActive && "border-b-2 border-white text-white"}`}>Open Orders</div>
               <div 
               onClick={OnClickPosition}
-              className={`py-2 px-4 cursor-pointer ${isPositionActive && "border-b-2 border-white text-white"}`}>Positions</div>
+              className={`py-2 px-4 cursor-pointer ${isPositionActive && "border-b-2 border-white text-white"}`}>Contracts</div>
               <div 
               onClick={OnClickFills}
               className={`py-2 px-4 cursor-pointer ${isFillsActive && "border-b-2 border-white text-white"}`}>Fills</div>
@@ -479,7 +479,81 @@ export default function InputLabelComponent({labelName,value,handleChange,name,i
 }
 
 function OpenOrdersComponent(){
-  return(<>Open Orders</>)
+
+  const {stockSymbol} = useParams()
+
+  const dispatch = useDispatch<AppDispatch>();
+  const [orders, setOrders] = useState([]);
+  const [offset, setOffset] = useState(0);
+
+  async function fetch(){
+    try {
+  
+      const response = await dispatch(fetchOpenOrders(stockSymbol)).unwrap()
+
+      setOrders(response?.data)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    setOrders([]);
+    fetch()
+  },[offset])
+
+
+  return(
+    <div className="mb-10">
+      
+      <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
+        <span className="w-[15%]">MARKET</span>
+        <span className="w-[10%]">SIDE</span>
+        <span className="w-[10%]">TYPE</span>
+        <span className="w-[10%]">PRICE</span>
+        <span className="w-[15%]">QTY</span>
+        <span className="w-[15%]">FILLED</span>
+        <span className="w-[15%]">STATUS</span>
+        <span className="w-[15%]">TIME</span>
+        
+      </div>
+      <div >
+        {
+          orders ?
+          orders.map((order:any)=>(
+            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
+              <span className="w-[15%]">PERP-{order.symbol.toUpperCase()}</span>
+              <span className="w-[10%]">{order.side}</span>
+              <span className="w-[10%]">{order.type}</span>
+              <span className="w-[10%]">{order.price}</span>
+              <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
+              <span className="w-[15%]">{order.filledQuantity} {order.symbol.toUpperCase()}</span>
+              <span className={`w-[15%]`}>{order.status.toUpperCase()}</span>
+              <span className="w-[15%]">{new Date(order.createdAt).toLocaleString("en-us",{
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second:'2-digit',
+                hour12: false,
+              })}</span>
+            </div>    
+          ))
+          :
+          <div className="flex justify-center items-center py-10">
+            <LoaderWhite/>
+          </div>
+        }
+      </div>
+
+      <div className="flex justify-end items-center gap-10 py-6 px-6">
+        <button onClick={fetch} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer`}>
+          Refresh
+        </button>
+      </div>
+    </div>
+  )
 }
 
 function OpenPositionsComponent(){
@@ -529,7 +603,7 @@ function FillHistoryComponent(){
 
 
   return(
-    <div className="mb-10">
+    <div className="mb-10 uppercase">
       
       <div className="flex w-full border-[#252525] border-b text-[#414141] px-14 py-1 text-xs">
         <span className="w-[15%]">Market</span>
@@ -628,7 +702,7 @@ function OrderHistoryComponent(){
 
 
   return(
-    <div className="mb-10">
+    <div className="mb-10 uppercase">
       
       <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
         <span className="w-[15%]">MARKET</span>

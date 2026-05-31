@@ -67,6 +67,27 @@ const placePerpOrder = createAsyncThunk(
   }
 )
 
+const fetchOpenOrders = createAsyncThunk(
+  'history/fills/symbol',
+  async function(symbol:any,{rejectWithValue}) {
+    try {
+      const response = await axios.get(`${BACKEND_BASE_URL}/stock/perpetual/order/open/${symbol}`, {
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      return response.data
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        return rejectWithValue({
+          status:error?.response?.data?.statusCode,
+          message:error?.response?.data?.message
+        })
+      }
+    }
+  }
+)
+
 
 const perpOrderSlice = createSlice({
   name:"PerpOrder",
@@ -78,5 +99,6 @@ export default perpOrderSlice.reducer
 export {
   getBalance,
   getOrderbook,
-  placePerpOrder
+  placePerpOrder,
+  fetchOpenOrders
 }
