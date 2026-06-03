@@ -29,7 +29,7 @@ const getOrderbook = createAsyncThunk(
   'perp/depth',
   async function (stockSymbol:any,{rejectWithValue}) {
     try {
-      const response = await axios.get(`${BACKEND_BASE_URL}/stock/perpetual/depth/${stockSymbol}`,{
+      const response = await axios.get(`${BACKEND_BASE_URL}/perpetual/depth/${stockSymbol}`,{
         headers: {
           'Authorization':`Bearer ${localStorage.getItem("token")}`
         }
@@ -50,7 +50,7 @@ const placePerpOrder = createAsyncThunk(
   'perp/order',
   async function (payload:any,{rejectWithValue}){
     try {
-      const response = await axios.post(`${BACKEND_BASE_URL}/stock/perpetual/order`, payload, {
+      const response = await axios.post(`${BACKEND_BASE_URL}/perpetual/order`, payload, {
         headers: {
           'Authorization':`Bearer ${localStorage.getItem("token")}`
         }
@@ -71,7 +71,7 @@ const fetchOpenOrders = createAsyncThunk(
   'history/fills/symbol',
   async function(symbol:any,{rejectWithValue}) {
     try {
-      const response = await axios.get(`${BACKEND_BASE_URL}/stock/perpetual/order/open/${symbol}`, {
+      const response = await axios.get(`${BACKEND_BASE_URL}/perpetual/order/open/${symbol}`, {
         headers: {
           'Authorization':`Bearer ${localStorage.getItem("token")}`
         }

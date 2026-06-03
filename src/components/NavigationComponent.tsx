@@ -1,13 +1,10 @@
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 export default function NavigationLayout({children}:any){
-
-  const navigate = useNavigate();
 
   function OnClickLogout(){
     localStorage.removeItem("token");
     localStorage.removeItem("role"); 
-    navigate("/signin")
     return
   }
 

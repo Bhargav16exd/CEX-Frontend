@@ -27,16 +27,10 @@ interface WsDepthData {
   updateId:number
 }
 
-//@ts-ignore
-enum OrderType {
-  long = "long",
-  short = "short"
-}
-
 // Types
 type OrderbookLevel = [number, number]; // [price, quantity]
 
-export function PerpStockPage(){
+export function SpotStockPage(){
   // ------- UTILITY SECTION -------
 
   const { stockSymbol } = useParams();
@@ -118,7 +112,7 @@ export function PerpStockPage(){
     setIsShortSectionActive(false);
     setInput({
         ...input,
-      side:OrderType.long
+      side:"LONG"
     })
   }
 
@@ -127,15 +121,15 @@ export function PerpStockPage(){
     setIsShortSectionActive(true);
     setInput({
         ...input,
-      side:OrderType.short
+      side:"SHORT"
     })
   }
 
   const [balance, setBalance] = useState();
 
   const [input, setInput] = useState({
-    type:"limit",
-    side:"long",
+    type:"LIMIT",
+    side:"",
     stockSymbol,
     price:"",
     quantity:""
@@ -146,14 +140,15 @@ export function PerpStockPage(){
     if(isLongSectionActive){
       setInput({
         ...input,
-      side:OrderType.long
+      side:"LONG"
     })
     }
     if(isShortSectionActive){
       setInput({
-          ...input,
-        side:OrderType.short
-      })
+        ...input,
+      side:"SHORT"
+    })
+    
     }
 
     if(!input.price || !input.quantity || !input.stockSymbol || !input.side || !input.type){
@@ -193,6 +188,7 @@ export function PerpStockPage(){
   async function GetBalance(){
     try {
       const response = await dispatch(getBalance({})).unwrap()
+      console.log(response.data.balance)
       setBalance(response?.data.balance)
     } catch (error:any) {
       if(error.status == 403){
@@ -405,7 +401,7 @@ export function PerpStockPage(){
 
             <div className="flex text-sm my-4 justify-between items-center">
               <p className="text-[#555555]">Available Balance</p>
-              <div>{ balance !== undefined ?  <>${balance}</> : <LoaderWhite/>}</div>
+              <div>${balance ? <p>{balance}</p> : <LoaderWhite/>}</div>
             </div>
 
             <InputLabelComponent

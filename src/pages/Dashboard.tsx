@@ -190,9 +190,9 @@ function PerpComponent({stocks}:any){
   )
 }
 
-function StockItem({title,market,symbol}:{title:string, market:string, symbol:string}){
+function StockItem({title, market, symbol}:{title:string, market:string, symbol:string}){
   return(
-    <Link to={`/perp/${symbol}`}>
+    <Link to={`/${market.toLocaleLowerCase()}/${symbol}`}>
     <div className="flex px-4 py-4 border-[#252525] border-b-2 w-full hover:bg-[#222222] cursor-pointer">
       <p className="w-[40%] text-sm font-semibold">{title}-{market}</p>
       <p className="w-[20%] text-sm font-mono flex justify-end ">{symbol}</p>

@@ -8,6 +8,7 @@ import Auth from './utils/Auth'
 import CreateStockPage from './pages/CreateStockPage'
 import { PerpStockPage } from './pages/PerpStockPage'
 import HistoryPage from './pages/HistoryPage'
+import { SpotStockPage } from './pages/SpotStockPage'
 
 
 function App() {
@@ -26,6 +27,8 @@ function App() {
         <Route path='/history'      element={<HistoryPage/>}></Route>
 
         <Route path='/perp/:stockSymbol' element={<PerpStockPage/>}></Route>
+        <Route path='/spot/:stockSymbol' element={<SpotStockPage/>}></Route>
+
       </Route>
     </Routes>
   )
