@@ -530,8 +530,8 @@ function OpenOrdersComponent(){
         {
           orders ?
           orders.map((order:any)=>(
-            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
-              <span className="w-[15%]">PERP-{order.symbol.toUpperCase()}</span>
+            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
+              <span className="w-[15%] font-medium">PERP-{order.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{order.side}</span>
               <span className="w-[10%]">{order.type}</span>
               <span className="w-[10%]">{order.price}</span>

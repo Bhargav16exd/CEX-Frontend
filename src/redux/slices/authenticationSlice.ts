@@ -12,7 +12,7 @@ const signup = createAsyncThunk(
   async function(payload:any,{rejectWithValue}){
     try {
       const response = await axios.post(`${BACKEND_BASE_URL}/user/signup`, payload);
-      return response
+      return response.data
     } catch (error) {
       if(axios.isAxiosError(error)){
         return rejectWithValue({
@@ -29,7 +29,7 @@ const signin = createAsyncThunk(
   async function(payload:any, {rejectWithValue}) {
     try {
       const response = await axios.post(`${BACKEND_BASE_URL}/user/signin`, payload);
-      return response
+      return response.data
     } catch (error) {
       if(axios.isAxiosError(error)){
         return rejectWithValue({
@@ -41,6 +41,13 @@ const signin = createAsyncThunk(
   }
 )
 
+const signout = createAsyncThunk(
+  'user/signout',
+  async function () {
+    return true
+  }
+)
+
 const authenticationSlice = createSlice({
   name:"Authentication",
   initialState,
@@ -48,16 +55,24 @@ const authenticationSlice = createSlice({
   extraReducers:(builder:ActionReducerMapBuilder<any>)=>{
     builder
     .addCase(signin.fulfilled, (state, action)=>{
-      localStorage.setItem("token", action.payload?.data.data.token);
-      localStorage.setItem("role", action.payload?.data.data.role);
-      state.role = action.payload?.data.data.role
+      localStorage.setItem("token", action.payload?.data.token);
+      localStorage.setItem("role", action.payload?.data.role);
+      state.role = action.payload?.data.role
+      state.token = action.payload?.data.token
+    })
+    .addCase(signout.fulfilled, (state,_) => {
+      state.role = "";
+      state.token = "";
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
     })
   }
 })
 
 export {
   signup,
-  signin
+  signin,
+  signout
 }
 
 export default authenticationSlice.reducer

@@ -55,7 +55,7 @@ export default function Signin(){
     try {
       const res = await dispatch(signin(inputs)).unwrap();
       setLoaderActive(false);
-      if(res?.data.success === true){
+      if(res?.success === true){
         navigate("/dashboard");
       }
     } catch (error:any) {

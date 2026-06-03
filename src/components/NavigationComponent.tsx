@@ -1,11 +1,14 @@
+import { useDispatch } from "react-redux";
 import { Link } from "react-router";
+import type { AppDispatch } from "../redux/store";
+import { signout } from "../redux/slices/authenticationSlice";
 
 export default function NavigationLayout({children}:any){
 
+  const dispatch = useDispatch<AppDispatch>()
+
   function OnClickLogout(){
-    localStorage.removeItem("token");
-    localStorage.removeItem("role"); 
-    return
+    dispatch(signout()).unwrap()
   }
 
   return(

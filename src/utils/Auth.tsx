@@ -1,8 +1,9 @@
+import { useSelector } from "react-redux"
 import { Navigate, Outlet } from "react-router"
 
 export default function Auth(){
     
-  const token  = localStorage.getItem("token")
+  const { token } = useSelector((state:any)=> state?.auth)
   
   return token ? 
     (<Outlet/>) 

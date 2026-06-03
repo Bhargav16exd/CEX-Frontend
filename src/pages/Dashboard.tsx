@@ -16,8 +16,8 @@ export function DashboardPage(){
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const [spotStocks, setSpotStocks] = useState([]);
-  const [perpStocks, setPerpStocks] = useState([]);
+  const [spotStocks, setSpotStocks] = useState(null);
+  const [perpStocks, setPerpStocks] = useState(null);
 
 
   async function fetchOrders(){
@@ -120,14 +120,15 @@ function SpotComponent({stocks}:any){
           </div>
 
           {
-              stocks.length > 0 ? 
-              stocks.map((stock:any)=>{
+            stocks === null ?
+            <div className="flex justify-center items-center my-4"><LoaderWhite/></div>
+            :
+              stocks?.length > 0 ? 
+              stocks?.map((stock:any)=>{
                 return <StockItem title={stock.title} market={"SPOT"} symbol={stock.symbol}/>
               })
-              :
-              <div className="flex justify-center items-center my-4"><LoaderWhite/></div>
-            }
-
+              : <div className="w-full text-center my-8 text-sm text-[#555555]">No Markets Added</div>
+          }
 
           <span className="flex items-center gap-2 p-4">
             <span className="h-1 w-1 animate-ping rounded-full bg-red-600 "></span>
@@ -171,13 +172,16 @@ function PerpComponent({stocks}:any){
       </div>
 
       {
-        stocks.length > 0 ? 
-        stocks.map((stock:any)=>{
-          return <StockItem key={stock.symbol} title={stock.title} market={"PERP"} symbol={stock.symbol}/>
-        })
-        :
-        <div className="flex justify-center items-center my-4"><LoaderWhite/></div>
-      }
+            stocks === null ?
+            <div className="flex justify-center items-center my-4"><LoaderWhite/></div>
+            :
+              stocks?.length > 0 ? 
+              stocks?.map((stock:any)=>{
+                return <StockItem key={stock.symbol} title={stock.title} market={"PERP"} symbol={stock.symbol}/>
+              })
+              : <div className="w-full text-center my-8 text-sm text-[#555555]">No Markets Added</div>
+          }
+
       
       <span className="flex items-center gap-2 p-4">
         <span className="h-1 w-1 animate-ping rounded-full bg-red-600 "></span>
