@@ -9,6 +9,7 @@ import LoaderWhite from "../components/WhiteLoaderCompoenet";
 import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
+import type { ClientWsResponse } from "@cex/shared"
 
 export type Orderbook = {
   updateId:number
@@ -16,12 +17,8 @@ export type Orderbook = {
   bids:OrderbookLevel[],
 }
 
-interface WsResponse {
-  type:string,
-  data:WsDepthData
-}
-
 interface WsDepthData {
+  topic:string,
   asks:OrderbookLevel[],
   bids:OrderbookLevel[],
   updateId:number
@@ -268,7 +265,9 @@ export function PerpStockPage(){
     const ws = new WebSocket("ws://localhost:8082");
 
       ws.onopen = () => {
+
         console.log("Connected to websocket server");
+
         ws.send(
           JSON.stringify({
             type: "PING",
@@ -283,36 +282,50 @@ export function PerpStockPage(){
 
       ws.onmessage = async (event) => {
 
-        const parsedEvent = JSON.parse(event.data) as WsResponse
-        const update = parsedEvent.data;
+        const parsedEvent = JSON.parse(event.data) as ClientWsResponse
 
-        if(!isSyncRef.current){
-          bufferedUpdateRef.current.push(update);
+        if(parsedEvent.type == "PONG"){
+          ws.send(JSON.stringify({
+            type:"SUBSCRIBE",
+            payload:{
+              topic:`perp-${stockSymbol}`
+            }
+          }))
+        }
 
-          if(bufferedUpdateRef.current.length === 1){
-            const snapshot = await GetOrderbook();
-            if(snapshot) handleOrderbookSync(snapshot); 
+        if(parsedEvent.type == "DEPTH"){
+
+          const update = parsedEvent.payload as WsDepthData
+
+          if(!isSyncRef.current){
+            bufferedUpdateRef.current.push(update);
+
+            if(bufferedUpdateRef.current.length === 1){
+              const snapshot = await GetOrderbook();
+              if(snapshot) handleOrderbookSync(snapshot); 
+            }
           }
+
+          // Stale update — already applied
+          if (update.updateId <= updatedIdRef.current) return;
+
+          if(update.updateId != updatedIdRef.current + 1){
+            console.warn("Gap detected, re-syncing...");
+            isSyncRef.current = false;
+            setIsSync(false);
+            bufferedUpdateRef.current = [update]; 
+            const snapshot = await GetOrderbook();
+            if (snapshot) handleOrderbookSync(snapshot);
+            return;
+          }
+
+          setOrderbook((prev) => {
+            const next = applyUpdate(prev, update);
+            updatedIdRef.current = next.updateId;
+            return next;
+          });
+
         }
-
-        // Stale update — already applied
-        if (update.updateId <= updatedIdRef.current) return;
-
-        if(update.updateId != updatedIdRef.current + 1){
-          console.warn("Gap detected, re-syncing...");
-          isSyncRef.current = false;
-          setIsSync(false);
-          bufferedUpdateRef.current = [update]; 
-          const snapshot = await GetOrderbook();
-          if (snapshot) handleOrderbookSync(snapshot);
-          return;
-        }
-
-        setOrderbook((prev) => {
-          const next = applyUpdate(prev, update);
-          updatedIdRef.current = next.updateId;
-          return next;
-        });
 
       };
 
