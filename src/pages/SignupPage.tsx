@@ -62,7 +62,7 @@ export default function Signup(){
     try {
       const res = await dispatch(signup(inputs)).unwrap()
       setLoaderActive(false);
-      if(res?.data.success === true){
+      if(res?.success === true){
         navigate("/signin");
       } 
     } catch (error:any) {

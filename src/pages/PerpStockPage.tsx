@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { InputLabelComponent } from "../components/InputLabelComponent";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
-import { fetchOpenOrders, getBalance, getOrderbook, placePerpOrder } from "../redux/slices/perpSlice";
+import { fetchOpenContract, fetchOpenOrders, getBalance, getOrderbook, placePerpOrder } from "../redux/slices/perpSlice";
 import LoaderWhite from "../components/WhiteLoaderCompoenet";
 import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
@@ -58,34 +58,34 @@ export function PerpStockPage(){
 
   // ------- HISTORY SECTION ---------
   const [isOpenOrderActive, setIsOpenOrderActive] = useState(true);
-  const [isPositionActive, setIsPositionActive] = useState(false);
+  const [isContractActive, setisContractActive] = useState(false);
   const [isFillsActive, setIsFillsActive] = useState(false);
   const [isOrderHistoryActive, setIsOrderHistoryActive] = useState(false);
 
   function OnClickOpenOrder(){
     setIsOpenOrderActive(true);
-    setIsPositionActive(false);
+    setisContractActive(false);
     setIsFillsActive(false);
     setIsOrderHistoryActive(false);
   }
   
   function OnClickPosition(){
     setIsOpenOrderActive(false);
-    setIsPositionActive(true);
+    setisContractActive(true);
     setIsFillsActive(false);
     setIsOrderHistoryActive(false);
   }
   
   function OnClickFills(){
     setIsOpenOrderActive(false);
-    setIsPositionActive(false);
+    setisContractActive(false);
     setIsFillsActive(true);
     setIsOrderHistoryActive(false);
   }
   
   function OnClickOrderHistory(){
     setIsOpenOrderActive(false);
-    setIsPositionActive(false);
+    setisContractActive(false);
     setIsFillsActive(false);
     setIsOrderHistoryActive(true);
   }
@@ -174,7 +174,6 @@ export function PerpStockPage(){
         setOrderResponsePanelActive(false);
       },10000)
 
-      GetOrderbook();
     } catch (error:any) {
       popError(error.message)
     }
@@ -357,7 +356,7 @@ export function PerpStockPage(){
               className={`py-2 px-4 cursor-pointer ${isOpenOrderActive && "border-b-2 border-white text-white"}`}>Open Orders</div>
               <div 
               onClick={OnClickPosition}
-              className={`py-2 px-4 cursor-pointer ${isPositionActive && "border-b-2 border-white text-white"}`}>Contracts</div>
+              className={`py-2 px-4 cursor-pointer ${isContractActive && "border-b-2 border-white text-white"}`}>Contract</div>
               <div 
               onClick={OnClickFills}
               className={`py-2 px-4 cursor-pointer ${isFillsActive && "border-b-2 border-white text-white"}`}>Fills</div>
@@ -369,7 +368,7 @@ export function PerpStockPage(){
               isOpenOrderActive && <OpenOrdersComponent/>
             }
             {
-              isPositionActive && <OpenPositionsComponent/>
+              isContractActive && <OpenContractComponent/>
             }
             {
               isFillsActive && <FillHistoryComponent/>
@@ -491,7 +490,7 @@ function OpenOrdersComponent(){
   const {stockSymbol} = useParams()
 
   const dispatch = useDispatch<AppDispatch>();
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<any>(null);
   const [offset, setOffset] = useState(0);
 
   async function fetch(){
@@ -507,13 +506,13 @@ function OpenOrdersComponent(){
   }
 
   useEffect(()=>{
-    setOrders([]);
+    setOrders(null);
     fetch()
   },[offset])
 
 
   return(
-    <div className="mb-10">
+    <div className="mb-10 uppercase">
       
       <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
         <span className="w-[15%]">MARKET</span>
@@ -529,25 +528,30 @@ function OpenOrdersComponent(){
       <div >
         {
           orders ?
-          orders.map((order:any)=>(
-            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
-              <span className="w-[15%] font-medium">PERP-{order.symbol.toUpperCase()}</span>
-              <span className="w-[10%]">{order.side}</span>
-              <span className="w-[10%]">{order.type}</span>
-              <span className="w-[10%]">{order.price}</span>
-              <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
-              <span className="w-[15%]">{order.filledQuantity} {order.symbol.toUpperCase()}</span>
-              <span className={`w-[15%]`}>{order.status.toUpperCase()}</span>
-              <span className="w-[15%]">{new Date(order.createdAt).toLocaleString("en-us",{
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second:'2-digit',
-                hour12: false,
-              })}</span>
-            </div>    
-          ))
+
+          orders.length > 0 
+            ?
+            orders?.map((order:any)=>(
+              <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
+                <span className="w-[15%] font-medium">PERP-{order.symbol.toUpperCase()}</span>
+                <span className="w-[10%]">{order.side}</span>
+                <span className="w-[10%]">{order.type}</span>
+                <span className="w-[10%]">{order.price}</span>
+                <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
+                <span className="w-[15%]">{order.filledQuantity} {order.symbol.toUpperCase()}</span>
+                <span className={`w-[15%]`}>{order.status.toUpperCase()}</span>
+                <span className="w-[15%]">{new Date(order.createdAt).toLocaleString("en-us",{
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second:'2-digit',
+                  hour12: false,
+                })}</span>
+              </div>    
+            ))
+            :
+            <div className="w-full text-center my-8 text-sm text-[#555555]">No Open Orders</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>
@@ -564,8 +568,68 @@ function OpenOrdersComponent(){
   )
 }
 
-function OpenPositionsComponent(){
-  return(<>Open Positions</>)
+function OpenContractComponent(){
+
+  const {stockSymbol} = useParams()
+
+  const dispatch = useDispatch<AppDispatch>();
+  const [order, setOrder] = useState<any>(null);
+
+  async function OnClickCloseContract(){}
+
+  async function fetch(){
+    try {
+      const response = await dispatch(fetchOpenContract(stockSymbol)).unwrap()
+      if(response.data?.success == true){
+        setOrder(response?.data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    fetch()
+  },[])
+
+
+  return(
+    <div className="mb-10 uppercase">
+      
+      <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
+        <span className="w-[15%]">MARKET</span>
+        <span className="w-[10%]">SIDE</span>
+        <span className="w-[10%]">QTY</span>
+        <span className="w-[10%]">ENTRY PRICE</span>
+        <span className="w-[10%]">MARGIN</span>
+        <span className="w-[15%]">UNREALIZED PROFIT</span>
+        <span className="w-[10%]">UNREALIZED LOSS</span>
+
+        
+      </div>
+      <div>
+        {
+          order != null &&
+          <div className="flex items-center px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
+            <span className="w-[15%] font-medium">PERP-{order.symbol?.toUpperCase()}</span>
+            <span className="w-[10%]">{order.side}</span>
+            <span className="w-[10%]">{Math.abs(order.contract_quantity)}</span>
+            <span className="w-[10%]">{order.avg_price}</span>
+            <span className="w-[10%]">{order.collateral} </span>
+            <span className="w-[15%]">{order.realizedProfit}</span>
+            <span className={`w-[10%]`}>{order.realizedLoss}</span>
+            <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer mx-10" onClick={OnClickCloseContract}>Close</button>
+          </div>    
+        }
+      </div>
+
+      <div className="flex justify-end items-center gap-10 py-6 px-6">
+        <button onClick={fetch} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer`}>
+          Refresh
+        </button>
+      </div>
+    </div>
+  )
 }
 
 function FillHistoryComponent(){
@@ -573,7 +637,7 @@ function FillHistoryComponent(){
   const {stockSymbol} = useParams()
 
   const dispatch = useDispatch<AppDispatch>();
-  const [fills, setFills] = useState([]);
+  const [fills, setFills] = useState<any>(null);
   const [offset, setOffset] = useState(0);
 
   function NextPage(){
@@ -625,24 +689,29 @@ function FillHistoryComponent(){
       </div>
       <div >
         {
-          fills.length > 0 ?
-          fills.map((fill:any)=>(
-            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
-              <span className="w-[15%]">PERP-{fill.symbol.toUpperCase()}</span>
-              <span className="w-[10%]">{fill.side}</span>
-              <span className="w-[10%]">{fill.price}</span>
-              <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
-              <span className="w-[10%]">0</span>
-              <span className="w-[10%]">{fill.role}</span>
-              <span className="w-[15%]">{new Date(fill.createdAt).toLocaleString("en-us",{
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })}</span>
-            </div>    
-          ))
+          fills 
+          
+          ?
+            fills.length > 0 ?
+            fills.map((fill:any)=>(
+              <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
+                <span className="w-[15%]">PERP-{fill.symbol.toUpperCase()}</span>
+                <span className="w-[10%]">{fill.side}</span>
+                <span className="w-[10%]">{fill.price}</span>
+                <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
+                <span className="w-[10%]">0</span>
+                <span className="w-[10%]">{fill.role}</span>
+                <span className="w-[15%]">{new Date(fill.createdAt).toLocaleString("en-us",{
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}</span>
+              </div>    
+            ))
+            :
+            <div className="w-full text-center my-8 text-sm text-[#555555]">Empty fills History</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>

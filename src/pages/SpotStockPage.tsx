@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import type { InputLabelComponent } from "../components/InputLabelComponent";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
-import { fetchOpenOrders, getBalance, getOrderbook, placePerpOrder } from "../redux/slices/perpSlice";
 import LoaderWhite from "../components/WhiteLoaderCompoenet";
 import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
+import { getBalance, getOrderbook, placeSpotOrder } from "../redux/slices/spotSlice";
 
 export type Orderbook = {
   updateId:number
@@ -99,36 +99,36 @@ export function SpotStockPage(){
   const updatedIdRef = useRef<number>(0);
 
   // ------- PAGE SEPECIFIC SECTION -------
-  const [isLongSectionActive, setIsLongSectionActive] = useState(true);
-  const [isShortSectionActive, setIsShortSectionActive] = useState(false);
+  const [isBidSectionActive, setIsBidSectionActive] = useState(true);
+  const [isAskSectionActive, setIsAskSectionActive] = useState(false);
   const [isOrderResponsePanelActive, setOrderResponsePanelActive] = useState(false);
   const [orderResponse, setOrderResponse] = useState({
     totalQuantity:0,
     filledQuantity:0
   })
 
-  function OnClickLongSection(){
-    setIsLongSectionActive(true);
-    setIsShortSectionActive(false);
+  function OnClickBidSection(){
+    setIsBidSectionActive(true);
+    setIsAskSectionActive(false);
     setInput({
         ...input,
-      side:"LONG"
+      side:"bid"
     })
   }
 
-  function OnClickShortSection(){
-    setIsLongSectionActive(false);
-    setIsShortSectionActive(true);
+  function OnClickAskSection(){
+    setIsBidSectionActive(false);
+    setIsAskSectionActive(true);
     setInput({
         ...input,
-      side:"SHORT"
+      side:"ask"
     })
   }
 
   const [balance, setBalance] = useState();
 
   const [input, setInput] = useState({
-    type:"LIMIT",
+    type: "limit",
     side:"",
     stockSymbol,
     price:"",
@@ -137,16 +137,16 @@ export function SpotStockPage(){
 
   async function OnClickPlaceOrder(){
     
-    if(isLongSectionActive){
+    if(isBidSectionActive){
       setInput({
         ...input,
-      side:"LONG"
-    })
+      side:"bid"
+      })
     }
-    if(isShortSectionActive){
+    if(isAskSectionActive){
       setInput({
         ...input,
-      side:"SHORT"
+      side:"ask"
     })
     
     }
@@ -157,7 +157,7 @@ export function SpotStockPage(){
     }
 
     try {
-      const res = await dispatch(placePerpOrder(input)).unwrap()
+      const res = await dispatch(placeSpotOrder(input)).unwrap()
       GetBalance();
       setOrderResponse({
         ...orderResponse,
@@ -169,7 +169,6 @@ export function SpotStockPage(){
         setOrderResponsePanelActive(false);
       },10000)
 
-      GetOrderbook();
     } catch (error:any) {
       popError(error.message)
     }
@@ -188,7 +187,6 @@ export function SpotStockPage(){
   async function GetBalance(){
     try {
       const response = await dispatch(getBalance({})).unwrap()
-      console.log(response.data.balance)
       setBalance(response?.data.balance)
     } catch (error:any) {
       if(error.status == 403){
@@ -381,11 +379,11 @@ export function SpotStockPage(){
         {/* ------- LONG OR SHORT SECTION -------*/}
         <div className="w-[20%]">
           <span className="flex text-[#555555] text-sm font-semibold text-center border-[#252525] border-b-2 ">
-            <div className={`w-1/2 cursor-pointer py-4 ${isLongSectionActive && "border-b-2 border-green-400 text-green-400"}`} onClick={OnClickLongSection}>
-              Buy / Long
+            <div className={`w-1/2 cursor-pointer py-4 ${isBidSectionActive && "border-b-2 border-green-400 text-green-400"}`} onClick={OnClickBidSection}>
+              Bid
             </div>
-            <div className={`w-1/2 cursor-pointer py-4 ${isShortSectionActive && "border-b-2 border-red-400 text-red-400"}`} onClick={OnClickShortSection}>
-              Sell / Short
+            <div className={`w-1/2 cursor-pointer py-4 ${isAskSectionActive && "border-b-2 border-red-400 text-red-400"}`} onClick={OnClickAskSection}>
+              Ask
             </div>
           </span>
 
@@ -401,7 +399,7 @@ export function SpotStockPage(){
 
             <div className="flex text-sm my-4 justify-between items-center">
               <p className="text-[#555555]">Available Balance</p>
-              <div>${balance ? <p>{balance}</p> : <LoaderWhite/>}</div>
+              <div>{ balance !== undefined ?  <>${balance}</> : <LoaderWhite/>}</div>
             </div>
 
             <InputLabelComponent
@@ -430,17 +428,17 @@ export function SpotStockPage(){
             }
             
             {
-              isLongSectionActive &&
+              isBidSectionActive &&
               <button 
               onClick={OnClickPlaceOrder}
-              className="rounded-md w-full py-2 px-2 text-green-400 bg-green-950 border border-green-700 my-6 active:scale-95 transition-transform">Buy/Long</button>
+              className="rounded-md w-full py-2 px-2 text-green-400 bg-green-950 border border-green-700 my-6 active:scale-95 transition-transform">Bid</button>
             }
 
             {
-              isShortSectionActive &&
+              isAskSectionActive &&
               <button 
               onClick={OnClickPlaceOrder}
-              className="rounded-md w-full py-2 px-2 text-red-400 bg-red-950 border border-red-700 my-6 active:scale-95 transition-transform">Sell/Short</button>
+              className="rounded-md w-full py-2 px-2 text-red-400 bg-red-950 border border-red-700 my-6 active:scale-95 transition-transform">Ask</button>
             }
 
             {
