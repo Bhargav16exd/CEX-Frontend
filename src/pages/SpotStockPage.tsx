@@ -17,10 +17,6 @@ export type Orderbook = {
   bids:OrderbookLevel[],
 }
 
-interface WsResponse {
-  type:string,
-  data:WsDepthData
-}
 
 interface WsDepthData {
   asks:OrderbookLevel[],
@@ -53,34 +49,23 @@ export function SpotStockPage(){
 
   // ------- HISTORY SECTION ---------
   const [isOpenOrderActive, setIsOpenOrderActive] = useState(true);
-  const [isPositionActive, setIsPositionActive] = useState(false);
   const [isFillsActive, setIsFillsActive] = useState(false);
   const [isOrderHistoryActive, setIsOrderHistoryActive] = useState(false);
 
   function OnClickOpenOrder(){
     setIsOpenOrderActive(true);
-    setIsPositionActive(false);
-    setIsFillsActive(false);
-    setIsOrderHistoryActive(false);
-  }
-  
-  function OnClickPosition(){
-    setIsOpenOrderActive(false);
-    setIsPositionActive(true);
     setIsFillsActive(false);
     setIsOrderHistoryActive(false);
   }
   
   function OnClickFills(){
     setIsOpenOrderActive(false);
-    setIsPositionActive(false);
     setIsFillsActive(true);
     setIsOrderHistoryActive(false);
   }
   
   function OnClickOrderHistory(){
     setIsOpenOrderActive(false);
-    setIsPositionActive(false);
     setIsFillsActive(false);
     setIsOrderHistoryActive(true);
   }
@@ -364,9 +349,6 @@ export function SpotStockPage(){
               onClick={OnClickOpenOrder}
               className={`py-2 px-4 cursor-pointer ${isOpenOrderActive && "border-b-2 border-white text-white"}`}>Open Orders</div>
               <div 
-              onClick={OnClickPosition}
-              className={`py-2 px-4 cursor-pointer ${isPositionActive && "border-b-2 border-white text-white"}`}>Contracts</div>
-              <div 
               onClick={OnClickFills}
               className={`py-2 px-4 cursor-pointer ${isFillsActive && "border-b-2 border-white text-white"}`}>Fills</div>
               <div 
@@ -375,9 +357,6 @@ export function SpotStockPage(){
             </span>
             {
               isOpenOrderActive && <OpenOrdersComponent/>
-            }
-            {
-              isPositionActive && <OpenPositionsComponent/>
             }
             {
               isFillsActive && <FillHistoryComponent/>
@@ -539,7 +518,7 @@ function OpenOrdersComponent(){
           orders ?
           orders.map((order:any)=>(
             <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
-              <span className="w-[15%]">PERP-{order.symbol.toUpperCase()}</span>
+              <span className="w-[15%]">SPOT-{order.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{order.side}</span>
               <span className="w-[10%]">{order.type}</span>
               <span className="w-[10%]">{order.price}</span>
@@ -572,10 +551,6 @@ function OpenOrdersComponent(){
   )
 }
 
-function OpenPositionsComponent(){
-  return(<>Open Positions</>)
-}
-
 function FillHistoryComponent(){
 
   const {stockSymbol} = useParams()
@@ -601,7 +576,7 @@ function FillHistoryComponent(){
       const requestPayload = {
         count:"5",
         offset:offset.toString(),
-        market:"perp",
+        market:"spot",
         symbol:stockSymbol!
       }
 
@@ -636,7 +611,7 @@ function FillHistoryComponent(){
           fills.length > 0 ?
           fills.map((fill:any)=>(
             <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
-              <span className="w-[15%]">PERP-{fill.symbol.toUpperCase()}</span>
+              <span className="w-[15%]">SPOT-{fill.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{fill.side}</span>
               <span className="w-[10%]">{fill.price}</span>
               <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
@@ -698,7 +673,7 @@ function OrderHistoryComponent(){
       const requestPayload = {
         count:"5",
         offset:offset.toString(),
-        market:"perp",
+        market:"spot",
         symbol:stockSymbol!
       }
 
@@ -735,7 +710,7 @@ function OrderHistoryComponent(){
           orders.length > 0 ?
           orders.map((order:any)=>(
             <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
-              <span className="w-[15%]">PERP-{order.symbol.toUpperCase()}</span>
+              <span className="w-[15%]">SPOT-{order.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{order.side}</span>
               <span className="w-[10%]">{order.type}</span>
               <span className="w-[10%]">{order.price}</span>

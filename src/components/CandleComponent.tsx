@@ -9,7 +9,7 @@ export default function CandleComponent(){
     if(!chartContainerRef.current) return
 
     const chartOptions = { 
-      height:600,
+      height:620,
       grid : { 
         vertLines: { color: '#0A0A0A' },
         horzLines: { color: '#555555' }

@@ -31,47 +31,50 @@ export function Orderbook({Orderbook}:{Orderbook:Orderbook}){
           <p className="w-[30%] flex justify-end">Size</p>
           <p className="w-[30%] flex justify-end">Total</p>
         </div>
-      
-        {/* Render Asks */}
-        <div className="flex flex-col-reverse font-mono">
-          {
-            enrichAsks.map(({price, quantity, total})=>(
-              <div key={price} className="relative flex px-4 py-1 text-xs text-[#A1A1A1] my-0.5">
-                <div 
-                style={{width:`${((total/maxTotal)*100)}%`}}
-                className="absolute inset-y-0 right-0 bg-red-400/10"></div>
-                <div 
-                style={{width:`${((quantity/maxTotal)*100)}%`}}
-                className="absolute inset-y-0 right-0 bg-red-500/70"></div>
-                <p className="w-[40%] text-red-400">{price}</p>
-                <p className="w-[30%] flex justify-end">{quantity}</p>
-                <p className="w-[30%] flex justify-end">{total}</p>
-              </div>
-            ))
-          }
-        </div>
-        
-        <div className="px-4 py-2 text-xs text-[#383838] border-t border-b">
-          <p>Spread : $ {enrichAsks[0]?.price - enrichBids[0]?.price}</p>
-        </div>
 
-        {/* Render Bids */}
-        <div className="flex flex-col font-mono">
-          {
-            enrichBids.map(({price, quantity, total})=>(
-              <div  key={price} className="relative flex px-4 py-1 text-xs text-white my-0.5">
-                <div 
-                style={{width:`${((total/maxTotal)*100)}%`}}
-                className="absolute inset-y-0 right-0 bg-green-400/10"></div>
-                <div 
-                style={{width:`${((quantity/maxTotal)*100)}%`}}
-                className="absolute inset-y-0 right-0 bg-green-500/70"></div>
-                <p className="w-[40%] text-green-400">{price}</p>
-                <p className="w-[30%] flex justify-end">{quantity}</p>
-                <p className="w-[30%] flex justify-end">{total}</p>
-              </div>
-            ))
-          }
+        <div className="h-131 overflow-y-auto no-scrollbar ">
+
+          {/* Render Asks */}
+          <div className="flex flex-col-reverse font-mono h-auto">
+            {
+              enrichAsks.map(({price, quantity, total})=>(
+                <div key={price} className="relative flex px-4 py-1 text-xs text-[#A1A1A1] my-0.5 ">
+                  <div 
+                  style={{width:`${((total/maxTotal)*100)}%`}}
+                  className="absolute inset-y-0 right-0 bg-red-400/10"></div>
+                  <div 
+                  style={{width:`${((quantity/maxTotal)*100)}%`}}
+                  className="absolute inset-y-0 right-0 bg-red-500/70"></div>
+                  <p className="w-[40%] text-red-400">{price}</p>
+                  <p className="w-[30%] flex justify-end">{quantity}</p>
+                  <p className="w-[30%] flex justify-end">{total}</p>
+                </div>
+              ))
+            }
+          </div>
+          
+          <div className="px-4 py-2 text-xs text-[#383838] border-t border-b shrink-0">
+            <p>Spread : $ {enrichAsks[0]?.price - enrichBids[0]?.price}</p>
+          </div>
+
+          {/* Render Bids */}
+          <div className="flex flex-col font-mono h-auto">
+            {
+              enrichBids.map(({price, quantity, total})=>(
+                <div  key={price} className="relative flex px-4 py-1 text-xs text-white my-0.5">
+                  <div 
+                  style={{width:`${((total/maxTotal)*100)}%`}}
+                  className="absolute inset-y-0 right-0 bg-green-400/10"></div>
+                  <div 
+                  style={{width:`${((quantity/maxTotal)*100)}%`}}
+                  className="absolute inset-y-0 right-0 bg-green-500/70"></div>
+                  <p className="w-[40%] text-green-400">{price}</p>
+                  <p className="w-[30%] flex justify-end">{quantity}</p>
+                  <p className="w-[30%] flex justify-end">{total}</p>
+                </div>
+              ))
+            }
+          </div>
         </div>
 
     </div>
