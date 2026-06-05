@@ -27,14 +27,24 @@ const placeSpotOrder = createAsyncThunk(
 
 const getBalance = createAsyncThunk(
   'user/balance',
-  async function (_:any,{rejectWithValue}) {
+  async function (symbol:string,{rejectWithValue}) {
     try {
-      const response = await axios.get(`${BACKEND_BASE_URL}/user/balance/spot`,{
+      const balanceResponse = await axios.get(`${BACKEND_BASE_URL}/user/balance/spot`,{
         headers: {
           'Authorization':`Bearer ${localStorage.getItem("token")}`
         }
       });
-      return response.data
+
+      const stockBalanceResposne = await axios.get(`${BACKEND_BASE_URL}/spot/stocks/${symbol}`,{
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+
+      return {
+        balance : balanceResponse.data,
+        stockBalance : stockBalanceResposne.data
+      }
     } catch (error) {
       if(axios.isAxiosError(error)){
         return rejectWithValue({

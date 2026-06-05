@@ -112,6 +112,8 @@ export function SpotStockPage(){
   }
 
   const [balance, setBalance] = useState();
+  const [stockBalance, setStockBalance] = useState();
+  const [lockedStockBalance, setLockedStockBalance] = useState();
 
   const [input, setInput] = useState({
     type: "limit",
@@ -172,8 +174,11 @@ export function SpotStockPage(){
 
   async function GetBalance(){
     try {
-      const response = await dispatch(getBalance({})).unwrap()
-      setBalance(response?.data.balance)
+      const res = await dispatch(getBalance(stockSymbol!)).unwrap()!
+      setBalance(res?.balance.data.balance)
+      setStockBalance(res?.stockBalance.data.total);
+      console.log(res?.stockBalance.data)
+      setLockedStockBalance(res?.stockBalance.data.locked);
     } catch (error:any) {
       if(error.status == 403){
         localStorage.removeItem("token");
@@ -393,6 +398,11 @@ export function SpotStockPage(){
             <div className="flex text-sm my-4 justify-between items-center">
               <p className="text-[#555555]">Available Balance</p>
               <div>{ balance !== undefined ?  <>${balance}</> : <LoaderWhite/>}</div>
+            </div>
+
+            <div className="flex text-sm my-4 justify-between items-center">
+              <p className="text-[#555555]">Available Stocks</p>
+              <div>{ stockBalance !== undefined && lockedStockBalance !== undefined ?  <> {stockBalance - lockedStockBalance} {stockSymbol?.toUpperCase()} </> : <LoaderWhite/>}</div>
             </div>
 
             <InputLabelComponent
