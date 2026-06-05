@@ -67,6 +67,27 @@ const getOrderbook = createAsyncThunk(
   }
 )
 
+const fetchOpenOrders = createAsyncThunk(
+  'history/fills/symbol',
+  async function({symbol, count, offset}:{symbol:string, count:number, offset:number},{rejectWithValue}) {
+    try {
+      const response = await axios.get(`${BACKEND_BASE_URL}/spot/order/open/${symbol}?count=${count}&offset=${offset}`, {
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      return response.data
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        return rejectWithValue({
+          status:error?.response?.data?.statusCode,
+          message:error?.response?.data?.message
+        })
+      }
+    }
+  }
+)
+
 const spotOrderSlice = createSlice({
   name:"SpotOrder",
   initialState,
@@ -77,5 +98,6 @@ export default spotOrderSlice.reducer;
 export { 
   placeSpotOrder,
   getBalance,
-  getOrderbook
+  getOrderbook,
+  fetchOpenOrders
 }

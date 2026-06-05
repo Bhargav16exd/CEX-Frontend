@@ -96,7 +96,7 @@ function SpotComponent({stocks}:any){
   }
 
   return(
-    <div className="border-[#252525] border-2 rounded-xl w-1/2 bg-[#111111]">
+    <div className="border-[#252525] border-2 rounded-md w-1/2 bg-[#111111]">
 
           <span className="flex px-4 py-4 border-[#252525] border-b-2">
             <span className="flex w-1/2 gap-4 items-center">
@@ -149,7 +149,7 @@ function PerpComponent({stocks}:any){
     navigate("/create-stock")
   }
   return(
-    <div className="border-[#252525] border-2 rounded-xl w-1/2 bg-[#111111]">
+    <div className="border-[#252525] border-2 rounded-md w-1/2 bg-[#111111]">
 
       <span className="flex px-4 py-4 border-[#252525] border-b-2">
         <span className="flex w-1/2 gap-4 items-center">

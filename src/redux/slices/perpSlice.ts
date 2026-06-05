@@ -69,9 +69,9 @@ const placePerpOrder = createAsyncThunk(
 
 const fetchOpenOrders = createAsyncThunk(
   'history/fills/symbol',
-  async function(symbol:any,{rejectWithValue}) {
+  async function({symbol, count, offset}:{symbol:string, count:number, offset:number},{rejectWithValue}) {
     try {
-      const response = await axios.get(`${BACKEND_BASE_URL}/perpetual/order/open/${symbol}`, {
+      const response = await axios.get(`${BACKEND_BASE_URL}/perpetual/order/open/${symbol}?count=${count}&offset=${offset}`, {
         headers: {
           'Authorization':`Bearer ${localStorage.getItem("token")}`
         }

@@ -219,11 +219,11 @@ export default function CreateStockPage(){
           <div className="max-w-3xl w-full">
             {
               !isConfirm ?
-              <button className="text-sm border bg-green-950 border-green-700 text-green-400 py-2 px-10 rounded-lg outline-none cursor-pointer" onClick={OnClickConfirmDetails}>
+              <button className="text-sm border bg-green-950 border-green-700 text-green-400 py-2 px-10 rounded-md outline-none cursor-pointer" onClick={OnClickConfirmDetails}>
                 Confirm Details
               </button>
               :
-              <button className="text-sm border bg-yellow-950 border-yello-700 text-yellow-400 py-2 px-10 rounded-lg outline-none cursor-pointer mx-4" onClick={OnClickEditDetails}>
+              <button className="text-sm border bg-yellow-950 border-yello-700 text-yellow-400 py-2 px-10 rounded-md outline-none cursor-pointer mx-4" onClick={OnClickEditDetails}>
                 Edit Details
                </button>
             }
@@ -234,21 +234,21 @@ export default function CreateStockPage(){
                 <h1 className="text-xl">
                   Review Details
                 </h1>
-                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-lg py-3 px-2 my-4">
+                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-md py-3 px-2 my-4">
                   <p className="text-xs font-semibold text-[#555555]">STOCK NAME</p>
                   <p className="my-2">{input.title}</p>
                 </div>
-                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-lg py-3 px-2 my-4">
+                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-md py-3 px-2 my-4">
                     <p className="text-xs font-semibold text-[#555555]">STOCK SYMBOL</p>
                     <p className="my-2">{input.symbol.toLocaleUpperCase()}</p>
                 </div>
-                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-lg py-3 px-2 my-4">
+                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-md py-3 px-2 my-4">
                     <p className="text-xs font-semibold text-[#555555]">MARKET TYPE</p>
-                    <p className={`mt-2 w-fit py-1 px-4 border rounded-lg
+                    <p className={`mt-2 w-fit py-1 px-4 border rounded-md
                       ${isSpotMarketSelected ? "bg-green-950 border-green-700 text-green-400" : "bg-blue-950  border-blue-700 text-blue-400"}`}>{input.market}</p>
                 </div>
 
-                <button className="text-sm border bg-green-950 border-green-700 text-green-400 py-2 px-10 rounded-lg outline-none cursor-pointer my-6 animate-bounce" onClick={OnClickSubmit}>
+                <button className="text-sm border bg-green-950 border-green-700 text-green-400 py-2 px-10 rounded-md outline-none cursor-pointer my-6 animate-bounce" onClick={OnClickSubmit}>
                   {
                     isLoaderActive ?
                     <LoaderGreen/> : 

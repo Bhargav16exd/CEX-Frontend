@@ -408,9 +408,9 @@ export function PerpStockPage(){
         {/* FORM */}
         <div className="px-4">
 
-            <span className="flex text-center justify-center text-sm my-4 border py-2 rounded-lg border-[#252525]">
+            <span className="flex text-center justify-center text-sm my-4 border py-2 rounded-md border-[#252525]">
               <div className="w-1/2 flex justify-center items-center">
-                <p className="rounded-lg text-blue-400 bg-blue-950 border border-blue-700 w-fit px-4 py-1">Limit</p>
+                <p className="rounded-md text-blue-400 bg-blue-950 border border-blue-700 w-fit px-4 py-1">Limit</p>
               </div>
               <div className="w-1/2 cursor-not-allowed flex justify-center items-center">Market</div>
             </span>
@@ -461,7 +461,7 @@ export function PerpStockPage(){
 
             {
               isOrderResponsePanelActive &&
-              <div className="my-4 text-green-400 bg-[#0D1F14] border border-green-700 rounded-lg">
+              <div className="my-4 text-green-400 bg-[#0D1F14] border border-green-700 rounded-md">
                 <div className="py-3 px-6 font-medium flex items-center gap-4 border-b-2 border-green-700 text-sm">
                   <div className="h-1.5 w-1.5 animate-ping rounded-full bg-green-400 z-10 "></div>
                   <p>ORDER FILLED</p>
@@ -504,13 +504,24 @@ function OpenOrdersComponent(){
 
   const dispatch = useDispatch<AppDispatch>();
   const [orders, setOrders] = useState<any>(null);
+
   const [offset, setOffset] = useState(0);
+
+  function NextPage(){
+    const value = offset
+    setOffset(value + 5)
+  }
+
+  function PrevPage(){
+    if(offset === 0) return;
+    const value = offset
+    setOffset(value - 5)
+  }
 
   async function fetch(){
     try {
   
-      const response = await dispatch(fetchOpenOrders(stockSymbol)).unwrap()
-
+      const response = await dispatch(fetchOpenOrders({symbol:stockSymbol!, count:5, offset})).unwrap()
       setOrders(response?.data)
 
     } catch (error) {
@@ -573,8 +584,14 @@ function OpenOrdersComponent(){
       </div>
 
       <div className="flex justify-end items-center gap-10 py-6 px-6">
-        <button onClick={fetch} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer`}>
-          Refresh
+        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
+          Prev
+        </button>
+        <p className="text-gray-400 text-sm">
+          {offset}
+        </p>
+        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
+          Next
         </button>
       </div>
     </div>

@@ -81,7 +81,7 @@ export default function Signup(){
   return(
     <div className="h-screen w-screen bg-[#0A0A0A] flex justify-center items-center tracking-tight">
 
-      <div className="border-2 border-[#333333] bg-[#111111] p-12 rounded-xl flex flex-col">
+      <div className="border-2 border-[#333333] bg-[#111111] p-12 rounded-md flex flex-col">
 
         <span className="flex justify-start items-center gap-4">
           <h1 className="font-bold text-xl text-white">
@@ -90,13 +90,13 @@ export default function Signup(){
           <p className="text-[#555555] text-xs">EXCHANGE</p>
         </span>
         
-        <div className="bg-[#1A1A1A] rounded-lg flex p-1 mb-2 mt-6">
+        <div className="bg-[#1A1A1A] rounded-md flex p-1 mb-2 mt-6">
           <div className="w-1/2 text-center py-2 text-[#8A8A8A] text-sm font-semibold">
              <Link to={"/signin"}>
               Sign in
             </Link>
           </div>
-          <div className="w-1/2 text-center py-2 bg-[#2A2A2A] rounded-lg text-white font-semibold text-sm">
+          <div className="w-1/2 text-center py-2 bg-[#2A2A2A] rounded-md text-white font-semibold text-sm">
            <Link to={"/signup"}>
               Create Account
             </Link>

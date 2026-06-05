@@ -84,7 +84,7 @@ export default function HistoryPage(){
 
 function SpotHistory(){
   return(
-  <div className="border-[#252525] border-2 rounded-xl w-full bg-[#111111] text-white">
+  <div className="border-[#252525] border-2 rounded-md w-full bg-[#111111] text-white">
     <span className="flex px-4 py-4 border-[#252525] border-b-2">
       <span className="flex w-1/2 gap-4 items-center">
         <h1 className="text-md font-semibold">History</h1>
@@ -120,7 +120,7 @@ function PerpsHistory(){
   }
 
   return(
-  <div className="border-[#252525] border-2 rounded-xl w-full bg-[#111111] text-white">
+  <div className="border-[#252525] border-2 rounded-md w-full bg-[#111111] text-white">
     <span className="flex px-4 py-4 border-[#252525] border-b-2 gap-6">
       <span className="flex w-auto gap-4 items-center">
         <h1 className="text-md font-semibold">History</h1>
