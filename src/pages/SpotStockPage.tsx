@@ -478,7 +478,7 @@ function OpenOrdersComponent(){
   const {stockSymbol} = useParams()
 
   const dispatch = useDispatch<AppDispatch>();
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<any>(null);
   const [offset, setOffset] = useState(0);
 
    function NextPage(){
@@ -505,13 +505,13 @@ function OpenOrdersComponent(){
   }
 
   useEffect(()=>{
-    setOrders([]);
+    setOrders(null);
     fetch()
   },[offset])
 
 
   return(
-    <div className="mb-10">
+    <div className="mb-10 uppercase">
       
       <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
         <span className="w-[15%]">MARKET</span>
@@ -526,6 +526,8 @@ function OpenOrdersComponent(){
       <div >
         {
           orders ?
+          orders.length > 0
+          ?
           orders.map((order:any)=>(
             <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
               <span className="w-[15%]">SPOT-{order.symbol.toUpperCase()}</span>
@@ -537,6 +539,8 @@ function OpenOrdersComponent(){
               <span className={`w-[15%]`}>{order.status.toUpperCase()}</span>
             </div>    
           ))
+          :
+          <div className="w-full text-center my-8 text-sm text-[#555555]">No Open Orders</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>
@@ -564,7 +568,7 @@ function FillHistoryComponent(){
   const {stockSymbol} = useParams()
 
   const dispatch = useDispatch<AppDispatch>();
-  const [fills, setFills] = useState([]);
+  const [fills, setFills] = useState<any>(null);
   const [offset, setOffset] = useState(0);
 
   function NextPage(){
@@ -598,6 +602,7 @@ function FillHistoryComponent(){
 
   useEffect(()=>{
     fetchFill()
+    setFills(null)
   },[offset])
 
 
@@ -614,8 +619,9 @@ function FillHistoryComponent(){
         <span className="w-[15%]">Time</span>
         
       </div>
-      <div >
+      <div>
         {
+          fills ?
           fills.length > 0 ?
           fills.map((fill:any)=>(
             <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
@@ -634,6 +640,7 @@ function FillHistoryComponent(){
               })}</span>
             </div>    
           ))
+          : <div className="w-full text-center my-8 text-sm text-[#555555]">Empty Fill History</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>
@@ -661,7 +668,7 @@ function OrderHistoryComponent(){
   const {stockSymbol} = useParams()
 
   const dispatch = useDispatch<AppDispatch>();
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<any>(null);
   const [offset, setOffset] = useState(0);
 
   function NextPage(){
@@ -695,7 +702,7 @@ function OrderHistoryComponent(){
   }
 
   useEffect(()=>{
-    setOrders([]);
+    setOrders(null);
     fetch()
   },[offset])
 
@@ -715,6 +722,7 @@ function OrderHistoryComponent(){
       </div>
       <div >
         {
+          orders ?
           orders.length > 0 ?
           orders.map((order:any)=>(
             <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
@@ -739,6 +747,7 @@ function OrderHistoryComponent(){
               })}</span>
             </div>    
           ))
+          : <div className="w-full text-center my-8 text-sm text-[#555555]">empty order History</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>

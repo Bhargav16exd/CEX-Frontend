@@ -198,8 +198,8 @@ function StockItem({title, market, symbol}:{title:string, market:string, symbol:
   return(
     <Link to={`/${market.toLocaleLowerCase()}/${symbol}`}>
     <div className="flex px-4 py-4 border-[#252525] border-b-2 w-full hover:bg-[#222222] cursor-pointer">
-      <p className="w-[40%] text-sm font-semibold">{title}-{market}</p>
-      <p className="w-[20%] text-sm font-mono flex justify-end ">{symbol}</p>
+      <p className="w-[40%] text-sm font-semibold uppercase">{title}-{market}</p>
+      <p className="w-[20%] text-sm font-mono flex justify-end uppercase ">{symbol}</p>
       <p className="w-[20%] text-sm font-mono text-green-400 flex justify-end">+2.41%</p>
       <p className="w-[20%] text-sm font-mono flex justify-end">$892M</p>
     </div>

@@ -700,6 +700,7 @@ function FillHistoryComponent(){
   }
 
   useEffect(()=>{
+    setFills(null);
     fetchFill()
   },[offset])
 
@@ -769,7 +770,7 @@ function OrderHistoryComponent(){
   const {stockSymbol} = useParams()
 
   const dispatch = useDispatch<AppDispatch>();
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<any>(null);
   const [offset, setOffset] = useState(0);
 
   function NextPage(){
@@ -803,7 +804,7 @@ function OrderHistoryComponent(){
   }
 
   useEffect(()=>{
-    setOrders([]);
+    setOrders(null);
     fetch()
   },[offset])
 
@@ -823,6 +824,7 @@ function OrderHistoryComponent(){
       </div>
       <div >
         {
+          orders ?
           orders.length > 0 ?
           orders.map((order:any)=>(
             <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
@@ -847,6 +849,8 @@ function OrderHistoryComponent(){
               })}</span>
             </div>    
           ))
+          :
+          <div className="w-full text-center my-8 text-sm text-[#555555]">empty order history</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>
