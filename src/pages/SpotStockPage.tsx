@@ -9,6 +9,7 @@ import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
 import { getBalance, getOrderbook, placeSpotOrder } from "../redux/slices/spotSlice";
+import type { ClientWsResponse } from "@cex/shared";
 
 export type Orderbook = {
   updateId:number
@@ -129,7 +130,7 @@ export function SpotStockPage(){
 
   const [input, setInput] = useState({
     type: "limit",
-    side:"",
+    side:"bid",
     stockSymbol,
     price:"",
     quantity:""
@@ -263,6 +264,7 @@ export function SpotStockPage(){
     const ws = new WebSocket("ws://localhost:8082");
 
       ws.onopen = () => {
+
         console.log("Connected to websocket server");
         ws.send(
           JSON.stringify({
@@ -278,10 +280,22 @@ export function SpotStockPage(){
 
       ws.onmessage = async (event) => {
 
-        const parsedEvent = JSON.parse(event.data) as WsResponse
-        const update = parsedEvent.data;
+        const parsedEvent = JSON.parse(event.data) as ClientWsResponse
 
-        if(!isSyncRef.current){
+        if(parsedEvent.type == "PONG"){
+          ws.send(JSON.stringify({
+            type:"SUBSCRIBE",
+            payload:{
+              topic:`spot-${stockSymbol}`
+            }
+          }))
+        }
+
+        if(parsedEvent.type == "DEPTH"){
+
+          const update = parsedEvent.payload as WsDepthData
+
+          if(!isSyncRef.current){
           bufferedUpdateRef.current.push(update);
 
           if(bufferedUpdateRef.current.length === 1){
@@ -308,7 +322,7 @@ export function SpotStockPage(){
           updatedIdRef.current = next.updateId;
           return next;
         });
-
+        }
       };
 
       ws.onclose = () => {
