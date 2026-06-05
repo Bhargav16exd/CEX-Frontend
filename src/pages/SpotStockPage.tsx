@@ -529,7 +529,7 @@ function OpenOrdersComponent(){
           orders.length > 0
           ?
           orders.map((order:any)=>(
-            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
+            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
               <span className="w-[15%]">SPOT-{order.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{order.side}</span>
               <span className="w-[10%]">{order.type}</span>
@@ -624,7 +624,7 @@ function FillHistoryComponent(){
           fills ?
           fills.length > 0 ?
           fills.map((fill:any)=>(
-            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
+            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
               <span className="w-[15%]">SPOT-{fill.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{fill.side}</span>
               <span className="w-[10%]">{fill.price}</span>
@@ -636,6 +636,7 @@ function FillHistoryComponent(){
                 day: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
+                second:'2-digit',
                 hour12: false,
               })}</span>
             </div>    
@@ -725,7 +726,7 @@ function OrderHistoryComponent(){
           orders ?
           orders.length > 0 ?
           orders.map((order:any)=>(
-            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
+            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
               <span className="w-[15%]">SPOT-{order.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{order.side}</span>
               <span className="w-[10%]">{order.type}</span>

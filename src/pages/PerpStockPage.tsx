@@ -546,7 +546,6 @@ function OpenOrdersComponent(){
         <span className="w-[15%]">QTY</span>
         <span className="w-[15%]">FILLED</span>
         <span className="w-[15%]">STATUS</span>
-        <span className="w-[15%]">TIME</span>
         
       </div>
       <div >
@@ -564,14 +563,6 @@ function OpenOrdersComponent(){
                 <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
                 <span className="w-[15%]">{order.filledQuantity} {order.symbol.toUpperCase()}</span>
                 <span className={`w-[15%]`}>{order.status.toUpperCase()}</span>
-                <span className="w-[15%]">{new Date(order.createdAt).toLocaleString("en-us",{
-                  month: "short",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second:'2-digit',
-                  hour12: false,
-                })}</span>
               </div>    
             ))
             :
@@ -737,6 +728,7 @@ function FillHistoryComponent(){
                   day: "numeric",
                   hour: "2-digit",
                   minute: "2-digit",
+                  second:'2-digit',
                   hour12: false,
                 })}</span>
               </div>    
@@ -819,7 +811,6 @@ function OrderHistoryComponent(){
         <span className="w-[10%]">PRICE</span>
         <span className="w-[15%]">QTY</span>
         <span className="w-[15%]">STATUS</span>
-        <span className="w-[15%]">TIME</span>
         
       </div>
       <div >
@@ -827,7 +818,7 @@ function OrderHistoryComponent(){
           orders ?
           orders.length > 0 ?
           orders.map((order:any)=>(
-            <div className="flex px-14 py-1.5 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
+            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
               <span className="w-[15%]">PERP-{order.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{order.side}</span>
               <span className="w-[10%]">{order.type}</span>

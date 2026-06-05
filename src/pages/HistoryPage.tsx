@@ -23,8 +23,8 @@ enum OrderSide {
 
 export default function HistoryPage(){
 
-  const [isSpotHistoryActive, setSpotHistoryActive] = useState(false);
-  const [isPerpsHistoryActive, setPerpsHistoryActive] = useState(true);
+  const [isSpotHistoryActive, setSpotHistoryActive] = useState(true);
+  const [isPerpsHistoryActive, setPerpsHistoryActive] = useState(false);
 
   function OnClickSpotHistory(){
     setSpotHistoryActive(true);
@@ -82,23 +82,12 @@ export default function HistoryPage(){
   )
 }
 
-function SpotHistory(){
-  return(
-  <div className="border-[#252525] border-2 rounded-md w-full bg-[#111111] text-white">
-    <span className="flex px-4 py-4 border-[#252525] border-b-2">
-      <span className="flex w-1/2 gap-4 items-center">
-        <h1 className="text-md font-semibold">History</h1>
-        <p className="text-xs text-green-400 bg-green-950 border border-green-700 py-1 px-3 rounded-full font-semibold">SPOT</p>    
-      </span>
-    </span>
-    </div>
-  )
-}
 
 function fetchLogo(symbol:string):any{
   const store:any = {
     "ETH":ETHLOGO,
     "SOL":SOLLOGO,
+    "SOLANA":SOLLOGO,
     "BTC":BTCLOGO,
   }
   return store[symbol]!;
@@ -144,10 +133,10 @@ function PerpsHistory(){
 
     <div>
       {
-        isFillsHistoryActive && <FillHistoryComponent/>
+        isFillsHistoryActive && <FillHistoryComponent market="perp"/>
       }
       {
-        isOrderHistoryActive && <OrderHistoryComponent/>
+        isOrderHistoryActive && <OrderHistoryComponent market="perp"/>
       }
     </div>
       
@@ -155,10 +144,60 @@ function PerpsHistory(){
   )
 }
 
-function FillHistoryComponent(){
+function SpotHistory(){
+
+  const [isFillsHistoryActive, setFillsHistoryActive] = useState(true);
+  const [isOrderHistoryActive, setOrdersHistoryActive] = useState(false);
+
+  function OnClickFillsHistory(){
+    setFillsHistoryActive(true);
+    setOrdersHistoryActive(false);
+  }
+
+  function OnClickOrdersHistory(){
+    setFillsHistoryActive(false);
+    setOrdersHistoryActive(true);
+  }
+
+  return(
+  <div className="border-[#252525] border-2 rounded-md w-full bg-[#111111] text-white">
+    <span className="flex px-4 py-4 border-[#252525] border-b-2 gap-6">
+      <span className="flex w-auto gap-4 items-center">
+        <h1 className="text-md font-semibold">History</h1>
+        <p className="text-xs text-green-400 bg-green-950 border border-green-700 py-1 px-3 rounded-full font-semibold">SPOT</p> 
+      </span>
+
+      <div className=" text-white flex flex-col gap-8">
+
+        <div className="p-1 border-[#252525] border-2 rounded-md w-fit bg-[#111111] flex gap-2 text-xs font-semibold">
+          <p
+          onClick={OnClickFillsHistory} 
+          className={` py-1 px-4 rounded-md flex justify-center items-center cursor-pointer ${isFillsHistoryActive && "bg-[#222222]"}`}>Fills</p>
+          <p 
+          onClick={OnClickOrdersHistory}
+          className={` py-1 px-4 rounded-md flex justify-center items-center cursor-pointer ${isOrderHistoryActive && "bg-[#222222]"}`}>Orders</p>
+        </div>
+
+      </div>
+    </span>
+
+    <div>
+      {
+        isFillsHistoryActive && <FillHistoryComponent market="spot"/>
+      }
+      {
+        isOrderHistoryActive && <OrderHistoryComponent market="spot"/>
+      }
+    </div>
+      
+    </div>
+  )
+}
+
+function FillHistoryComponent({market}:{market:string}){
 
   const dispatch = useDispatch<AppDispatch>();
-  const [fills, setFills] = useState([]);
+  const [fills, setFills] = useState<any>(null);
   const [offset, setOffset] = useState(0);
 
   function NextPage(){
@@ -178,7 +217,7 @@ function FillHistoryComponent(){
       const requestPayload = {
         count:"20",
         offset:offset.toString(),
-        market:"perp"
+        market
       }
 
       const response = await dispatch(fetchGlobalFills(requestPayload)).unwrap()
@@ -190,6 +229,7 @@ function FillHistoryComponent(){
   }
 
   useEffect(()=>{
+    setFills(null)
     fetchFill()
   },[offset])
 
@@ -209,8 +249,10 @@ function FillHistoryComponent(){
       </div>
       <div >
         {
+          fills ? 
+
           fills.length > 0 ?
-          fills.map((fill:any,idx)=>(
+          fills.map((fill:any,idx:number)=>(
             <div key={idx} className="flex px-14 py-4 text-sm border-b border-[#252525] text-[#A1A1A1] font-mono justify-center items-center">
               <span className="w-[20%] flex justify-start items-center gap-2">
                 <img src={fetchLogo(fill.symbol.toUpperCase())} alt="logo" className="h-8"/>
@@ -229,10 +271,12 @@ function FillHistoryComponent(){
                 day: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
+                second:'2-digit',
                 hour12: false,
               })}</span>
             </div>    
           ))
+          : <div className="w-full text-center my-8 text-sm text-[#555555]">Empty Fill History</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>
@@ -255,11 +299,11 @@ function FillHistoryComponent(){
   )
 }
 
-function OrderHistoryComponent(){
+function OrderHistoryComponent({market}:{market:string}){
 
 
   const dispatch = useDispatch<AppDispatch>();
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<any>(null);
   const [offset, setOffset] = useState(0);
 
   function NextPage(){
@@ -279,7 +323,7 @@ function OrderHistoryComponent(){
       const requestPayload = {
         count:"20",
         offset:offset.toString(),
-        market:"perp"
+        market
       }
 
       const response = await dispatch(fetchGlobalOrders(requestPayload)).unwrap()
@@ -292,7 +336,7 @@ function OrderHistoryComponent(){
   }
 
   useEffect(()=>{
-    setOrders([]);
+    setOrders(null);
     fetch()
   },[offset])
 
@@ -312,9 +356,10 @@ function OrderHistoryComponent(){
       </div>
       <div >
         {
+          orders ?
           orders.length > 0 ?
-          orders.map((order:any)=>(
-            <div className="flex px-14 py-4 text-sm border-b border-[#252525] text-[#A1A1A1] font-mono justify-center items-center">
+          orders.map((order:any, idx:number)=>(
+            <div key={idx} className="flex px-14 py-4 text-sm border-b border-[#252525] text-[#A1A1A1] font-mono justify-center items-center">
               <span className="w-[20%] flex justify-start items-center gap-2">
                 <img src={fetchLogo(order.symbol.toUpperCase())} alt="logo" className="h-8"/>
                 <p>PERP-{order.symbol.toUpperCase()}</p>
@@ -343,6 +388,7 @@ function OrderHistoryComponent(){
               })}</span>
             </div>    
           ))
+          : <div className="w-full text-center my-8 text-sm text-[#555555]">Empty orders History</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>
