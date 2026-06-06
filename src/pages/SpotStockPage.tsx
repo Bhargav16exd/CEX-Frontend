@@ -8,7 +8,7 @@ import LoaderWhite from "../components/WhiteLoaderCompoenet";
 import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
-import { fetchOpenOrders, getBalance, getOrderbook, placeSpotOrder } from "../redux/slices/spotSlice";
+import { cancelSpotOrder, fetchOpenOrders, getBalance, getOrderbook, placeSpotOrder } from "../redux/slices/spotSlice";
 import type { ClientWsResponse } from "@cex/shared";
 
 export type Orderbook = {
@@ -504,11 +504,21 @@ function OpenOrdersComponent(){
 
   async function fetch(){
     try {
-  
       const response = await dispatch(fetchOpenOrders({symbol:stockSymbol!, count:5, offset})).unwrap()
-
       setOrders(response?.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
+  async function OnClickCancelOrder(orderId:string){
+    try {
+      setOrders(null);
+      const response = await dispatch(cancelSpotOrder({symbol:stockSymbol, orderId})).unwrap()
+      console.log(response)
+      if(response.success == true){
+        fetch();
+      }
     } catch (error) {
       console.log(error)
     }
@@ -538,8 +548,10 @@ function OpenOrdersComponent(){
           orders ?
           orders.length > 0
           ?
-          orders.map((order:any)=>(
-            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
+          orders.map((order:any, idx:number)=>(
+            <div 
+            key={idx}
+            className="flex justify-start items-center px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
               <span className="w-[15%]">SPOT-{order.symbol.toUpperCase()}</span>
               <span className="w-[10%]">{order.side}</span>
               <span className="w-[10%]">{order.type}</span>
@@ -547,6 +559,8 @@ function OpenOrdersComponent(){
               <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
               <span className="w-[15%]">{order.filledQuantity} {order.symbol.toUpperCase()}</span>
               <span className={`w-[15%]`}>{order.status.toUpperCase()}</span>
+              <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer " 
+              onClick={()=> OnClickCancelOrder(order.orderId)}>Close</button>
             </div>    
           ))
           :

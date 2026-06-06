@@ -25,6 +25,27 @@ const placeSpotOrder = createAsyncThunk(
   }
 )
 
+const cancelSpotOrder = createAsyncThunk(
+  'spot/order',
+  async function (payload:any,{rejectWithValue}){
+    try {
+      const response = await axios.post(`${BACKEND_BASE_URL}/spot/cancel-order`, payload, {
+        headers: {
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      return response.data
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        return rejectWithValue({
+          status:error?.response?.data?.statusCode,
+          message:error?.response?.data?.message
+        })
+      }
+    }
+  }
+)
+
 const getBalance = createAsyncThunk(
   'user/balance',
   async function (symbol:string,{rejectWithValue}) {
@@ -109,5 +130,6 @@ export {
   placeSpotOrder,
   getBalance,
   getOrderbook,
-  fetchOpenOrders
+  fetchOpenOrders,
+  cancelSpotOrder
 }
