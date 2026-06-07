@@ -9,7 +9,7 @@ import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
 import { cancelSpotOrder, fetchOpenOrders, getBalance, getOrderbook, placeSpotOrder } from "../redux/slices/spotSlice";
-import type { ClientWsResponse } from "@cex/shared";
+import type { ClientWsResponse } from "@bhargav16exdd/cex";
 
 export type Orderbook = {
   updateId:number
@@ -77,7 +77,6 @@ export function SpotStockPage(){
     bids:[],
     asks:[]
   })
-  const [isSync, setIsSync] = useState(false);
 
   const isSyncRef = useRef(false);
   const snapshotRef = useRef<Orderbook | null>(null);
@@ -240,7 +239,6 @@ export function SpotStockPage(){
     updatedIdRef.current = book.updateId;
     snapshotRef.current = book;
     isSyncRef.current = true;
-    setIsSync(true);
     setOrderbook(book);
   }
 
@@ -300,7 +298,6 @@ export function SpotStockPage(){
         if(update.updateId != updatedIdRef.current + 1){
           console.warn("Gap detected, re-syncing...");
           isSyncRef.current = false;
-          setIsSync(false);
           bufferedUpdateRef.current = [update]; 
           const snapshot = await GetOrderbook();
           if (snapshot) handleOrderbookSync(snapshot);

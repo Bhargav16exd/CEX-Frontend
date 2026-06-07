@@ -9,7 +9,7 @@ import LoaderWhite from "../components/WhiteLoaderCompoenet";
 import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
-import type { ClientWsResponse } from "@cex/shared"
+import type { ClientWsResponse } from "@bhargav16exdd/cex"
 
 export type Orderbook = {
   updateId:number
@@ -94,7 +94,6 @@ export function PerpStockPage(){
     bids:[],
     asks:[]
   })
-  const [isSync, setIsSync] = useState(false);
 
   const isSyncRef = useRef(false);
   const snapshotRef = useRef<Orderbook | null>(null);
@@ -251,7 +250,6 @@ export function PerpStockPage(){
     updatedIdRef.current = book.updateId;
     snapshotRef.current = book;
     isSyncRef.current = true;
-    setIsSync(true);
     setOrderbook(book);
   }
 
@@ -312,7 +310,6 @@ export function PerpStockPage(){
           if(update.updateId != updatedIdRef.current + 1){
             console.warn("Gap detected, re-syncing...");
             isSyncRef.current = false;
-            setIsSync(false);
             bufferedUpdateRef.current = [update]; 
             const snapshot = await GetOrderbook();
             if (snapshot) handleOrderbookSync(snapshot);
