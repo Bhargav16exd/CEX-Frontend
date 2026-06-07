@@ -77,7 +77,7 @@ export default function Signin(){
 
         <span className="flex justify-start items-center gap-4">
           <h1 className="font-bold text-xl text-white">
-            UMBRELLA
+            OnlyFunds
           </h1>
           <p className="text-[#555555] text-xs">EXCHANGE</p>
         </span>
@@ -101,7 +101,7 @@ export default function Signin(){
           handleChange={handleChange}
           name="username"
           inputType="text"
-          placeholder="umbrella@corp"
+          placeholder="onlyfunds@corp"
         />
 
         <InputLabelComponent
@@ -117,7 +117,7 @@ export default function Signin(){
         onClick={OnClickSignin}
         className="bg-white rounded-md mt-4 my-2 py-2.5 text-sm font-semibold tracking-tight cursor-pointer flex justify-center items-center">
           {
-            isLoaderActive ? <LoaderWhite/> : <>Sign in to UMBRELLA</>
+            isLoaderActive ? <LoaderWhite/> : <>Sign in to OnlyFunds</>
           }
         </button>
 

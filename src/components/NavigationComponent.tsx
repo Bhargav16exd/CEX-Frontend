@@ -18,7 +18,7 @@ export default function NavigationLayout({children}:any){
 
             <Link to={'/'}>
             <h1 className="font-semibold text-lg text-white">
-              UMBRELLA
+              OnlyFunds
             </h1>
             </Link>
 

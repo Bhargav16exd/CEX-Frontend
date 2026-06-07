@@ -121,7 +121,7 @@ function Nav() {
        <div className="flex justify-between items-center w-full gap-10 px-10">
 
             <h1 className="font-semibold text-lg text-white">
-              UMBRELLA
+              OnlyFunds
             </h1>
 
           <Link to={'/signin'}>
@@ -359,7 +359,7 @@ function OrderBookSection() {
 function WhySection() {
   return (
     <div className="mx-auto px-6 border-b" style={{ maxWidth: 1080, padding: "80px 24px", borderColor: "#1f1f1f" }}>
-      <div style={{ fontSize: 11, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Why Umbrella</div>
+      <div style={{ fontSize: 11, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Why OnlyFunds</div>
       <h2 style={{ fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 600, letterSpacing: "-.04em", lineHeight: 1.1 }}>The edge you need.</h2>
 
       <div className="grid border-t mt-12" style={{ gridTemplateColumns: "repeat(4,1fr)", borderColor: "#1f1f1f" }}>
@@ -410,7 +410,7 @@ function Footer() {
         <div>
           <div className="flex items-center gap-2 mb-2.5" style={{ fontWeight: 600, fontSize: 14, letterSpacing: "-.02em" }}>
             <span className="grid place-items-center rounded-[3px]" style={{ width: 20, height: 20, background: "#ededed" }}>
-              UMBRELLA
+              OnlyFunds
             </span>
             APEX
           </div>

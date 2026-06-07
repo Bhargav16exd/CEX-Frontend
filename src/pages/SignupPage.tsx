@@ -85,7 +85,7 @@ export default function Signup(){
 
         <span className="flex justify-start items-center gap-4">
           <h1 className="font-bold text-xl text-white">
-            UMBRELLA
+            OnlyFunds
           </h1>
           <p className="text-[#555555] text-xs">EXCHANGE</p>
         </span>
@@ -109,7 +109,7 @@ export default function Signup(){
           handleChange={handleChange}
           name="username"
           inputType="text"
-          placeholder="umbrella@corp"
+          placeholder="onlyfunds@corp"
         />
 
         <InputLabelComponent
