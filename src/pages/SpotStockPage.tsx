@@ -10,6 +10,7 @@ import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
 import { cancelSpotOrder, fetchOpenOrders, getBalance, getOrderbook, placeSpotOrder } from "../redux/slices/spotSlice";
 import type { ClientWsResponse } from "@bhargav16exdd/cex";
+import { WS_BASE_URL } from "../constants";
 
 export type Orderbook = {
   updateId:number
@@ -249,7 +250,7 @@ export function SpotStockPage(){
   }
 
   async function EstablishWsConnection(){
-    const ws = new WebSocket("ws://localhost:8082");
+    const ws = new WebSocket(WS_BASE_URL);
 
       ws.onopen = () => {
 
