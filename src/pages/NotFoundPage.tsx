@@ -8,32 +8,6 @@ const Dot = ({ className = "" }) => (
   />
 );
 
-function Nav() {
-  return (
-    <nav
-      className="w-full fixed top-0 left-0 z-50 flex items-center  border-b"
-      style={{
-        height: 54,
-        borderColor: "#1f1f1f",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
-    >
-       <div className="flex justify-between items-center w-full gap-10 px-10">
-
-            <h1 className="font-semibold text-white">
-              OnlyFunds
-            </h1>
-
-          <Link to={'/signin'}>
-            <ButtonBlack name="Sign in"/>
-          </Link>
-
-        </div>
-    </nav>
-  );
-}
-
 function Hero() {
   return (
     <div
@@ -97,17 +71,6 @@ export default function NotFoundPage() {
     </NavigationLayout>
   
   );
-}
-
-function ButtonBlack({name}:{name:string}){
-  return(
-    <button
-      className="text-xs px-3.5 py-1.5 rounded-[5px] cursor-pointer transition-all duration-150 border border-[#2a2a2a] text-[#ededed]"
-      style={{ color: "#ededed", fontFamily: "Geist, sans-serif" }}
-      onMouseEnter={e => e.currentTarget.style.borderColor = "#444"}
-      onMouseLeave={e => e.currentTarget.style.borderColor = "#2a2a2a"}
-    >{name}</button>
-  )
 }
 
 function ButtonWhite({name}:{name:string}){
