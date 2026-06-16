@@ -9,6 +9,7 @@ import CreateStockPage from './pages/CreateStockPage'
 import { PerpStockPage } from './pages/PerpStockPage'
 import HistoryPage from './pages/HistoryPage'
 import { SpotStockPage } from './pages/SpotStockPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 
 function App() {
@@ -30,6 +31,9 @@ function App() {
         <Route path='/spot/:stockSymbol' element={<SpotStockPage/>}></Route>
 
       </Route>
+
+
+      <Route path='*' element={<NotFoundPage/>}></Route>
     </Routes>
   )
 }

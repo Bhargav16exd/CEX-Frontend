@@ -446,7 +446,6 @@ export default function LandingPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap');
         html { scroll-behavior: smooth; }
         body { background: #000; }
         ::-webkit-scrollbar { width: 3px; }
@@ -459,13 +458,10 @@ export default function LandingPage() {
       <div
         style={{
           color: "#ededed",
-          fontFamily: "Geist, sans-serif",
-          fontSize: 14,
           lineHeight: 1.6,
-          WebkitFontSmoothing: "antialiased",
           minHeight: "100vh",
         }}
-        className="min-h-screen bg-[#0A0A0A]"
+        className="min-h-screen bg-[#0A0A0A] text-sm"
       >
         <Nav />
 
