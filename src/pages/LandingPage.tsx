@@ -110,7 +110,7 @@ const Dot = ({ className = "" }) => (
 function Nav() {
   return (
     <nav
-      className="w-full fixed top-0 left-0 z-50 flex items-center  border-b-2 bg-[#111111]"
+      className="w-full fixed top-0 left-0 z-50 flex items-center  border-b"
       style={{
         height: 54,
         borderColor: "#1f1f1f",
@@ -120,7 +120,7 @@ function Nav() {
     >
        <div className="flex justify-between items-center w-full gap-10 px-10">
 
-            <h1 className="font-semibold text-lg text-white">
+            <h1 className="font-semibold text-white">
               OnlyFunds
             </h1>
 
@@ -139,19 +139,21 @@ function Hero() {
       className="mx-auto px-6 border-b max-w-5xl"
       style={{ paddingTop: 160, paddingBottom: 100, borderColor: "#1f1f1f" }}
     >
-      <div className="inline-flex items-center gap-1.5 mb-7 text-sm" style={{ color: "#888", fontFamily: "Geist Mono, monospace", letterSpacing: "-.01em" }}>
+      <div className="inline-flex items-center gap-1.5 mb-7 text-xs" style={{ color: "#888", fontFamily: "Geist Mono, monospace", letterSpacing: "-.01em" }}>
         <Dot />
         V 0.5 Beta live 
       </div>
 
       <h1 
-      className="text-8xl tracking-tighter mb-7"
+      className="text-7xl tracking-tighter mb-7"
       style={{ fontWeight: 600, lineHeight: 1.02, color: "#ededed" }}>
         Trade anything.<br />
         <span style={{ color: "#444", fontWeight: 300 }}>At any size.</span>
       </h1>
 
-      <p style={{ fontSize: 17, color: "#888", fontWeight: 300, maxWidth: 440, lineHeight: 1.65, letterSpacing: "-.01em", marginBottom: 32 }}>
+      <p 
+      className="text-sm"
+      style={{ color: "#888", fontWeight: 300, maxWidth: 440, lineHeight: 1.65, letterSpacing: "-.01em", marginBottom: 32 }}>
         Perpetuals, and spot on one exchange. Built for speed, designed for depth.
       </p>
 
@@ -172,8 +174,8 @@ function Ticker() {
         {doubled.map((t, i) => (
           <div
             key={i}
-            className="flex items-center gap-2.5 border-r shrink-0 py-4 px-6"
-            style={{ borderColor: "#1f1f1f", fontFamily: "Geist Mono, monospace", fontSize: 12, whiteSpace: "nowrap" }}
+            className="flex items-center gap-2.5 border-r shrink-0 py-4 px-10 text-2xs"
+            style={{ borderColor: "#1f1f1f", fontFamily: "Geist Mono, monospace", whiteSpace: "nowrap" }}
           >
             <span style={{ color: "#ededed", fontWeight: 900 }}>{t.sym}</span>
             <span style={{ color: t.up ? "#4ade80" : "#f87171" }}>{t.price}</span>
@@ -206,7 +208,7 @@ function Stats() {
 
 function MarketsSection() {
   return (
-    <div className="mx-auto px-6 border-b max-w-6xl" style={{ padding: "80px 24px", borderColor: "#1f1f1f" }}>
+    <div className="mx-auto px-6 border-b max-w-5xl" style={{ padding: "80px 24px", borderColor: "#1f1f1f" }}>
       <div style={{ fontSize: 11, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Markets</div>
       <h2 
       className="text-4xl"
@@ -215,7 +217,7 @@ function MarketsSection() {
       </h2>
 
       <div className="border mt-10" style={{ borderColor: "#1f1f1f" }}>
-        <div className="grid border-b" style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "10px 16px", fontSize: 11, color: "#444", textTransform: "uppercase", letterSpacing: ".06em", borderColor: "#1f1f1f", background: "#0a0a0a" }}>
+        <div className="grid border-b" style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "10px 16px", fontSize: 10, color: "#444", textTransform: "uppercase", letterSpacing: ".06em", borderColor: "#1f1f1f", background: "#0a0a0a" }}>
           <span>Pair</span>
           <span className="text-right">Price</span>
           <span className="text-right">24h Change</span>
@@ -246,7 +248,7 @@ function MarketsSection() {
 
 function FeaturesSection() {
   return (
-    <div className="mx-auto px-6 border-b" style={{ maxWidth: 1080, padding: "80px 24px", borderColor: "#1f1f1f" }}>
+    <div className="mx-auto px-6 border-b max-w-5xl" style={{ padding: "80px 24px", borderColor: "#1f1f1f" }}>
       <div style={{ fontSize: 11, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Platform</div>
       <h2 style={{ fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 600, letterSpacing: "-.04em", lineHeight: 1.1, marginBottom: 12 }}>
         Everything a serious<br />trader needs.
@@ -302,7 +304,7 @@ function OrderBookCard() {
       {[...asks].reverse().map((a, i) => {
         const pct = (+a.s / maxS * 95).toFixed(0);
         return (
-          <div key={i} className="grid relative" style={{ gridTemplateColumns: "1fr 1fr 1fr", padding: "3px 14px", fontFamily: "Geist Mono, monospace", fontSize: 11, lineHeight: 1.8 }}>
+          <div key={i} className="grid relative my-1" style={{ gridTemplateColumns: "1fr 1fr 1fr", padding: "3px 14px", fontFamily: "Geist Mono, monospace", fontSize: 11, lineHeight: 1.8 }}>
             <div className="absolute right-0 top-0 bottom-0" style={{ width: `${pct}%`, background: "#ef4444", opacity: .08 }} />
             <span style={{ color: "#f87171" }}>{a.p.toLocaleString()}</span>
             <span className="text-right" style={{ color: "#888" }}>{a.s}</span>
@@ -318,7 +320,7 @@ function OrderBookCard() {
       {bids.map((b, i) => {
         const pct = (+b.s / maxS * 95).toFixed(0);
         return (
-          <div key={i} className="grid relative" style={{ gridTemplateColumns: "1fr 1fr 1fr", padding: "3px 14px", fontFamily: "Geist Mono, monospace", fontSize: 11, lineHeight: 1.8 }}>
+          <div key={i} className="grid relative my-1" style={{ gridTemplateColumns: "1fr 1fr 1fr", padding: "3px 14px", fontFamily: "Geist Mono, monospace", fontSize: 11, lineHeight: 1.8 }}>
             <div className="absolute right-0 top-0 bottom-0" style={{ width: `${pct}%`, background: "#22c55e", opacity: .08 }} />
             <span style={{ color: "#4ade80" }}>{b.p.toLocaleString()}</span>
             <span className="text-right" style={{ color: "#888" }}>{b.s}</span>
@@ -332,10 +334,10 @@ function OrderBookCard() {
 
 function OrderBookSection() {
   return (
-    <div className="mx-auto px-6 border-b" style={{ maxWidth: 1080, padding: "80px 24px", borderColor: "#1f1f1f" }}>
+    <div className="mx-auto px-6 border-b max-w-5xl" style={{ padding: "80px 24px", borderColor: "#1f1f1f" }}>
       <div className="grid gap-20 items-center" style={{ gridTemplateColumns: "1fr 1fr" }}>
         <div>
-          <div style={{ fontSize: 11, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Order Book</div>
+          <div style={{ fontSize: 10, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Order Book</div>
           <h2 style={{ fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 600, letterSpacing: "-.04em", lineHeight: 1.1 }}>
             Depth that<br />never blinks.
           </h2>
@@ -358,7 +360,7 @@ function OrderBookSection() {
 
 function WhySection() {
   return (
-    <div className="mx-auto px-6 border-b" style={{ maxWidth: 1080, padding: "80px 24px", borderColor: "#1f1f1f" }}>
+    <div className="mx-auto px-6 border-b max-w-5xl" style={{ padding: "80px 24px", borderColor: "#1f1f1f" }}>
       <div style={{ fontSize: 11, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Why OnlyFunds</div>
       <h2 style={{ fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 600, letterSpacing: "-.04em", lineHeight: 1.1 }}>The edge you need.</h2>
 
@@ -381,18 +383,14 @@ function CTA() {
       <h2 style={{ fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 600, letterSpacing: "-.04em", marginBottom: 12 }}>Ready to trade?</h2>
       <p style={{ fontSize: 15, color: "#888", fontWeight: 300, marginBottom: 28 }}>Join 14,000+ traders on the fastest on-chain exchange.</p>
       <div className="flex gap-2.5 justify-center">
+        <Link to={'/signin'}>
         <button
           className="rounded-[5px] cursor-pointer transition-all duration-150"
           style={{ padding: "9px 20px", fontSize: 13, fontWeight: 500, background: "#ededed", border: "1px solid #ededed", color: "#000", fontFamily: "Geist, sans-serif", letterSpacing: "-.01em" }}
           onMouseEnter={e => e.currentTarget.style.opacity = ".88"}
           onMouseLeave={e => e.currentTarget.style.opacity = "1"}
         >Start trading</button>
-        <button
-          className="rounded-[5px] cursor-pointer transition-all duration-150"
-          style={{ padding: "9px 20px", fontSize: 13, fontWeight: 500, background: "none", border: "1px solid #2a2a2a", color: "#ededed", fontFamily: "Geist, sans-serif", letterSpacing: "-.01em" }}
-          onMouseEnter={e => e.currentTarget.style.borderColor = "#444"}
-          onMouseLeave={e => e.currentTarget.style.borderColor = "#2a2a2a"}
-        >Read the docs</button>
+        </Link>
       </div>
     </div>
   );
@@ -406,13 +404,12 @@ function Footer() {
   ];
   return (
     <footer className="border-t px-6" style={{ borderColor: "#1f1f1f", padding: "48px 24px", background: "#0a0a0a" }}>
-      <div className="mx-auto grid gap-12" style={{ maxWidth: 1080, gridTemplateColumns: "1.4fr repeat(3,1fr)" }}>
+      <div className="mx-auto grid gap-12 max-w-5xl" style={{ gridTemplateColumns: "1.4fr repeat(3,1fr)" }}>
         <div>
           <div className="flex items-center gap-2 mb-2.5" style={{ fontWeight: 600, fontSize: 14, letterSpacing: "-.02em" }}>
-            <span className="grid place-items-center rounded-[3px]" style={{ width: 20, height: 20, background: "#ededed" }}>
+            <span>
               OnlyFunds
             </span>
-            APEX
           </div>
           <p style={{ fontSize: 12, color: "#444", lineHeight: 1.7, maxWidth: 180 }}>
             The next-generation centralized exchange for professional traders.
@@ -435,7 +432,7 @@ function Footer() {
         className="mx-auto flex justify-between items-center border-t"
         style={{ maxWidth: 1080, marginTop: 28, paddingTop: 20, borderColor: "#1f1f1f", fontSize: 11, color: "#444" }}
       >
-        <span>© 2026 APEX Exchange</span>
+        <span>© 2026 OnlyFunds Exchange</span>
         <div className="flex items-center gap-1.5">
           <Dot />
           All systems operational
@@ -493,8 +490,8 @@ export default function LandingPage() {
 function ButtonBlack({name}:{name:string}){
   return(
     <button
-      className="px-3.5 py-1.5 rounded-[5px] cursor-pointer transition-all duration-150 border border-[#2a2a2a] text-[#ededed]"
-      style={{ fontSize: 13, fontWeight: 500, letterSpacing: "-.01em",  color: "#ededed", fontFamily: "Geist, sans-serif" }}
+      className="text-xs px-3.5 py-1.5 rounded-[5px] cursor-pointer transition-all duration-150 border border-[#2a2a2a] text-[#ededed]"
+      style={{ color: "#ededed", fontFamily: "Geist, sans-serif" }}
       onMouseEnter={e => e.currentTarget.style.borderColor = "#444"}
       onMouseLeave={e => e.currentTarget.style.borderColor = "#2a2a2a"}
     >{name}</button>
@@ -504,8 +501,8 @@ function ButtonBlack({name}:{name:string}){
 function ButtonWhite({name}:{name:string}){
   return(
     <button
-      className="px-3.5 py-1.5 rounded-[5px] cursor-pointer transition-all duration-150"
-      style={{ fontSize: 13, fontWeight: 500, letterSpacing: "-.01em", background: "#ededed", border: "1px solid #ededed", color: "#000", fontFamily: "Geist, sans-serif" }}
+      className="text-xs px-3.5 py-1.5 rounded-[5px] cursor-pointer transition-all duration-150"
+      style={{ background: "#ededed", border: "1px solid #ededed", color: "#000", fontFamily: "Geist, sans-serif" }}
       onMouseEnter={e => e.currentTarget.style.opacity = ".88"}
       onMouseLeave={e => e.currentTarget.style.opacity = "1"}
     >{name}</button>
