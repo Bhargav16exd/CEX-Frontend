@@ -6,6 +6,9 @@ import { signin } from "../redux/slices/authenticationSlice";
 import type { AppDispatch } from "../redux/store";
 import ButtonWhite from "../components/ButtonWhiteComponent";
 import { useErrorLoaderState } from "../hooks/useErrorLoaderState";
+import TitleComponent from "../components/TitleComponent";
+import SigninSignupSwitcherComponent from "../components/SigninSignupSwitcherComponent";
+import ErrorMessageComponent from "../components/ErrorMsgComponent";
 
 export default function Signin(){
 
@@ -15,7 +18,7 @@ export default function Signin(){
   const { token } = useSelector((state:any)=>state.auth);
   const navigate = useNavigate();
 
-  const { popError, isErrorActive, errorMessage, isLoaderActive, setLoaderActive} = useErrorLoaderState()
+  const { popError, isErrorActive, errorMessage, isLoaderActive, setLoaderActive} = useErrorLoaderState();
 
 
   // ------- DISPATCH AND ERROR HANLDERS --------
@@ -63,27 +66,11 @@ export default function Signin(){
   return(
     <div className="h-screen w-screen bg-black-standard flex justify-center items-center tracking-tight broder">
 
-      <div className="border border-border-standard bg-[#0A0A0A] py-12 px-10 rounded-md flex flex-col">
+      <div className="border border-b-color-standard bg-[#0A0A0A] py-12 px-10 rounded-md flex flex-col">
 
-        <span className="flex justify-start items-center gap-4">
-          <h1 className="font-bold text-lg text-white">
-            OnlyFunds
-          </h1>
-          <p className="text-[#555555] text-2xs">EXCHANGE</p>
-        </span>
+        <TitleComponent/>
         
-        <div className="bg-[#111111] rounded-md flex p-1 mb-2 mt-6">
-          <div className="w-1/2 text-center py-2  bg-[#222222] rounded-md text-white  text-xs">
-            <Link to={"/signin"}>
-              Sign in
-            </Link>            
-          </div>
-          <div className="w-1/2 text-center py-2 text-[#8A8A8A] text-xs ">
-            <Link to={"/signup"}>
-             Create Account
-            </Link>
-          </div>
-        </div>
+        <SigninSignupSwitcherComponent isSignInActive={true} isSignUpActive={false}/>
         
         <InputLabelComponent
           labelName="USER NAME"
@@ -105,12 +92,7 @@ export default function Signin(){
 
         <ButtonWhite OnClickFunctionHanlder={OnClickSignin} isLoaderActive={isLoaderActive} buttonName={"Sign in to OnlyFunds"}/>
 
-        {
-          isErrorActive &&
-          <p className="text-center text-red-400 text-xs my-2 max-w-xs text-wrap overflow-hidden">
-            {errorMessage}
-          </p>
-        }
+        <ErrorMessageComponent errorActive={isErrorActive} errorMessage={errorMessage}/>
 
         <span className="text-xs text-center text-[#555555] my-2">
           <p>Dont have an account? 

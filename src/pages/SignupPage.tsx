@@ -4,18 +4,20 @@ import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { signup } from "../redux/slices/authenticationSlice";
 import type { AppDispatch } from "../redux/store";
-import LoaderWhite from "../components/WhiteLoaderCompoenet";
+import { useErrorLoaderState } from "../hooks/useErrorLoaderState";
+import TitleComponent from "../components/TitleComponent";
+import SigninSignupSwitcherComponent from "../components/SigninSignupSwitcherComponent";
+import ButtonWhite from "../components/ButtonWhiteComponent";
+import ErrorMessageComponent from "../components/ErrorMsgComponent";
 
 export default function Signup(){
 
   // ------- DISPATCH AND ERROR HANLDERS --------
 
   const dispatch = useDispatch<AppDispatch>();
-  const [isLoaderActive, setLoaderActive] = useState(false);
   const { token } = useSelector((state:any)=>state.auth);
-  const [isErrorActive, setErrorActive] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const { popError, isErrorActive, errorMessage, isLoaderActive, setLoaderActive} = useErrorLoaderState();
 
   const [inputs, setInputs] = useState({
     username:"",
@@ -23,16 +25,6 @@ export default function Signup(){
     confirmPassword:""
   });
 
-  function popError(errorMessage:string){
-    setLoaderActive(false);
-    setErrorActive(true);
-    setErrorMessage(errorMessage);
-
-    setTimeout(()=>{
-      setErrorActive(false);
-      setErrorMessage("");
-    }, 5000)
-  }
 
   // ------- DISPATCH AND ERROR HANLDERS --------
 
@@ -79,29 +71,13 @@ export default function Signup(){
     },[])
 
   return(
-    <div className="h-screen w-screen bg-[#0A0A0A] flex justify-center items-center tracking-tight">
+    <div className="h-screen w-screen bg-black-standard flex justify-center items-center tracking-tight">
 
-      <div className="border-2 border-[#333333] bg-[#111111] p-12 rounded-md flex flex-col">
+      <div className="border border-b-color-standard bg-[#0A0A0A] py-12 px-10 rounded-md flex flex-col">
 
-        <span className="flex justify-start items-center gap-4">
-          <h1 className="font-bold text-xl text-white">
-            OnlyFunds
-          </h1>
-          <p className="text-[#555555] text-xs">EXCHANGE</p>
-        </span>
+        <TitleComponent/>
         
-        <div className="bg-[#1A1A1A] rounded-md flex p-1 mb-2 mt-6">
-          <div className="w-1/2 text-center py-2 text-[#8A8A8A] text-sm font-semibold">
-             <Link to={"/signin"}>
-              Sign in
-            </Link>
-          </div>
-          <div className="w-1/2 text-center py-2 bg-[#2A2A2A] rounded-md text-white font-semibold text-sm">
-           <Link to={"/signup"}>
-              Create Account
-            </Link>
-          </div>
-        </div>
+        <SigninSignupSwitcherComponent isSignInActive={false} isSignUpActive={true}/>
         
         <InputLabelComponent
           labelName="USER NAME"
@@ -130,20 +106,11 @@ export default function Signup(){
           placeholder="******"
         />
 
-        <button className="bg-white rounded-md mt-4 my-2 py-2.5 text-sm font-semibold tracking-tight cursor-pointer flex justify-center items-center" onClick={OnClickSignup}>
-          {
-            isLoaderActive ? <LoaderWhite/> : <>Create Account</>
-          }
-        </button>
+        <ButtonWhite OnClickFunctionHanlder={OnClickSignup} buttonName="Create Account" isLoaderActive={isLoaderActive}/>
 
-        {
-          isErrorActive &&
-          <p className="text-center text-red-400 text-sm my-2 max-w-xs text-wrap overflow-hidden">
-            {errorMessage}
-          </p>
-        }
+        <ErrorMessageComponent errorActive={isErrorActive} errorMessage={errorMessage}/>
 
-        <span className="text-sm text-center text-[#555555]">
+        <span className="text-xs text-center text-[#555555] my-2">
           <p>Already have an account? 
              <Link to={'/signin'}>
                 <button className="text-[#A1A1A1] underline hover:text-white cursor-pointer mx-1">Sign in</button>

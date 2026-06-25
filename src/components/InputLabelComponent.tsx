@@ -4,7 +4,7 @@ export default function InputLabelComponent({labelName,value,handleChange,name,i
       <label className="my-2 text-2xs font-semibold text-[#555555]">
           {labelName}
       </label>
-      <input type={inputType} autoComplete={`new-${labelName}`} placeholder={placeholder} className="my-1 outline-none border border-border-standard rounded-md w-2xs py-3 px-2 text-xs bg-[#111111] placeholder:text-[#555555] text-white" onChange={handleChange} name={name} value={value} />
+      <input type={inputType} autoComplete={`new-${labelName}`} placeholder={placeholder} className="my-1 outline-none border border-b-color-standard rounded-md w-2xs py-3 px-2 text-xs bg-[#111111] placeholder:text-[#555555] text-white" onChange={handleChange} name={name} value={value} />
     </div>
   )
 }
