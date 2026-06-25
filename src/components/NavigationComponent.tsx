@@ -18,7 +18,7 @@ export default function NavigationLayout({children}:any){
       WebkitFontSmoothing: "antialiased",
     }}
     >
-      <div className="bg-[#0A0A0A] border-[#252525] border-b">
+      <div className="bg-black-standard border-b-b-color-standard border-b">
         <div className="flex py-3 px-10 gap-12 justify-between items-center w-full relative text-sm">
             <Link to={'/'}>
               <h1 className="font-semibold text-white">
