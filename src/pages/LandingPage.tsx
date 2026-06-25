@@ -144,7 +144,7 @@ function Nav() {
 function Hero() {
   return (
     <div
-      className="mx-auto px-6 border-b max-w-5xl"
+      className="mx-auto px-10 border-b max-w-5xl"
       style={{ paddingTop: 160, paddingBottom: 100, borderColor: "#1f1f1f" }}
     >
       <div className="inline-flex items-center gap-1.5 mb-7 text-xs" style={{ color: "#888", fontFamily: "Geist Mono, monospace", letterSpacing: "-.01em" }}>
@@ -203,10 +203,10 @@ function Stats() {
     { n: "<10ms",  l: "Median latency" },
   ];
   return (
-    <div className="grid border-b" style={{ gridTemplateColumns: "repeat(4,1fr)", borderColor: "#1f1f1f" }}>
+    <div className="flex flex-col md:flex-row w-full " style={{ gridTemplateColumns: "repeat(4,1fr)", borderColor: "#1f1f1f" }}>
       {stats.map((s, i) => (
-        <div key={i} className="border-r last:border-r-0" style={{ padding: "36px 28px", borderColor: "#1f1f1f" }}>
-          <span className="block" style={{ fontFamily: "Geist Mono, monospace", fontSize: 28, fontWeight: 600, letterSpacing: "-.04em", marginBottom: 4 }}>{s.n}</span>
+        <div key={i} className="flex flex-col items-center md:items-start w-full border-b border-r last:border-r-0 py-6 px-10 md:py-10" style={{ borderColor: "#1f1f1f" }}>
+          <span className="block text-lg md:text-2xl" style={{ fontFamily: "Geist Mono, monospace", fontWeight: 600, letterSpacing: "-.04em", marginBottom: 4 }}>{s.n}</span>
           <span style={{ fontSize: 12, color: "#888" }}>{s.l}</span>
         </div>
       ))}
@@ -262,16 +262,12 @@ function FeaturesSection() {
         Everything a serious<br />trader needs.
       </h2>
 
-      <div className="grid border mt-12 border-[#1f1f1f]" style={{ gridTemplateColumns: "repeat(3,1fr)", borderColor: "#1f1f1f" }}>
+      <div className="flex flex-col md:grid md:grid-cols-3 border mt-12 border-[#1f1f1f]">
+
         {FEATURES.map((f, i) => (
           <div
             key={i}
-            className="border-r border-b  border-[#1f1f1f] transition-colors duration-150"
-            style={{
-              padding: 28,
-              borderRight: (i + 1) % 3 === 0 ? "none" : undefined,
-              borderBottom: i >= 3 ? "none" : undefined,
-            }}
+            className={`border-b border-[#1f1f1f] transition-colors duration-150 p-8 md:py-10 ${ i  % 3 == 1 && "md:border-l md:border-r"}`}  
             onMouseEnter={e => e.currentTarget.style.background = "#0a0a0a"}
             onMouseLeave={e => e.currentTarget.style.background = "transparent"}
           >
@@ -301,7 +297,9 @@ function OrderBookCard() {
   const spread = asks[0].p - bids[0].p;
 
   return (
-    <div className="border" style={{ borderColor: "#1f1f1f", background: "#0a0a0a" }}>
+
+    <div className="w-full border" style={{ borderColor: "#1f1f1f", background: "#0a0a0a" }}>
+
       <div className="flex justify-between items-center border-b" style={{ padding: "10px 14px", borderColor: "#1f1f1f", fontSize: 12, fontWeight: 500, color: "#888" }}>
         Order Book <span style={{ color: "#ededed" }}>BTC-PERP</span>
       </div>
@@ -341,10 +339,13 @@ function OrderBookCard() {
 }
 
 function OrderBookSection() {
+
   return (
-    <div className="mx-auto px-6 border-b max-w-5xl" style={{ padding: "80px 24px", borderColor: "#1f1f1f" }}>
-      <div className="grid gap-20 items-center" style={{ gridTemplateColumns: "1fr 1fr" }}>
-        <div>
+    <div className="w-full mx-auto px-6 border-b max-w-5xl" style={{ padding: "80px 24px", borderColor: "#1f1f1f" }}>
+
+      <div className="w-full flex flex-col md:flex-row gap-20 items-center">
+
+        <div className="w-full md:w:1/2">
           <div style={{ fontSize: 10, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Order Book</div>
           <h2 style={{ fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 600, letterSpacing: "-.04em", lineHeight: 1.1 }}>
             Depth that<br />never blinks.
@@ -360,21 +361,25 @@ function OrderBookSection() {
             ))}
           </div>
         </div>
-        <OrderBookCard />
+
+        <div className="w-full md:w:1/2 ">
+          <OrderBookCard />
+        </div>
       </div>
     </div>
   );
 }
 
 function WhySection() {
+
   return (
     <div className="mx-auto px-6 border-b max-w-5xl" style={{ padding: "80px 24px", borderColor: "#1f1f1f" }}>
       <div style={{ fontSize: 11, color: "#444", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 500, marginBottom: 12, fontFamily: "Geist Mono, monospace" }}>Why OnlyFunds</div>
       <h2 style={{ fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 600, letterSpacing: "-.04em", lineHeight: 1.1 }}>The edge you need.</h2>
 
-      <div className="grid border-t mt-12" style={{ gridTemplateColumns: "repeat(4,1fr)", borderColor: "#1f1f1f" }}>
+      <div className="flex flex-col md:flex-row border-t mt-12" style={{ gridTemplateColumns: "repeat(4,1fr)", borderColor: "#1f1f1f" }}>
         {PERKS.map((p, i) => (
-          <div key={i} className="border-r last:border-r-0" style={{ padding: 28, borderColor: "#1f1f1f" }}>
+          <div key={i} className=" border-b" style={{ padding: 28, borderColor: "#1f1f1f" }}>
             <div style={{ fontSize: 11, color: "#444", fontFamily: "Geist Mono, monospace", marginBottom: 10 }}>{p.n}</div>
             <div style={{ fontSize: 14, fontWeight: 500, letterSpacing: "-.02em", marginBottom: 6 }}>{p.t}</div>
             <div style={{ fontSize: 13, color: "#888", fontWeight: 300, lineHeight: 1.6 }}>{p.d}</div>
@@ -405,35 +410,21 @@ function CTA() {
 }
 
 function Footer() {
-  const cols = [
-    { h: "Product",    links: ["Perpetuals","Spot Trading","Earn","Leaderboard"] },
-    { h: "Developers", links: ["Documentation","REST API","WebSocket API","Python SDK"] },
-    { h: "Company",    links: ["About","Blog","Careers","Terms"] },
-  ];
+
   return (
     <footer className="border-t px-6" style={{ borderColor: "#1f1f1f", padding: "48px 24px", background: "#0a0a0a" }}>
-      <div className="mx-auto grid gap-12 max-w-5xl" style={{ gridTemplateColumns: "1.4fr repeat(3,1fr)" }}>
-        <div>
+      <div className="mx-auto flex justify-between gap-12 max-w-5xl" style={{ gridTemplateColumns: "1.4fr repeat(3,1fr)" }}>
+
+        <div className="flex flex-col md:flex-row md:cgap-10">
           <div className="flex items-center gap-2 mb-2.5" style={{ fontWeight: 600, fontSize: 14, letterSpacing: "-.02em" }}>
             <span>
               OnlyFunds
             </span>
           </div>
-          <p style={{ fontSize: 12, color: "#444", lineHeight: 1.7, maxWidth: 180 }}>
+          <p style={{ fontSize: 12, color: "#444", lineHeight: 1.7 }}>
             The next-generation centralized exchange for professional traders.
           </p>
         </div>
-        {cols.map(col => (
-          <div key={col.h}>
-            <h4 style={{ fontSize: 12, fontWeight: 500, marginBottom: 14, letterSpacing: "-.01em" }}>{col.h}</h4>
-            {col.links.map(l => (
-              <a
-                key={l} href="#"
-                className="block no-underline transition-colors duration-150 text-xs mb-2 text-[#444]"
-              >{l}</a>
-            ))}
-          </div>
-        ))}
       </div>
 
       <div
