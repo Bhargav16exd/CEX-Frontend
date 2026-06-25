@@ -461,7 +461,7 @@ export default function LandingPage() {
           lineHeight: 1.6,
           minHeight: "100vh",
         }}
-        className="min-h-screen bg-[#0A0A0A] text-sm"
+        className="min-h-screen bg-black-standard text-sm"
       >
         <Nav />
 
