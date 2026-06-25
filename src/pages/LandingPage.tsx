@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { environment, EnvironmentEnum } from "../constants";
 
 /* ─── Data ─────────────────────────────────────────── */
 const TICKER_DATA = [
@@ -100,9 +101,16 @@ function generateOB() {
   return { asks, bids, base };
 }
 
-const Dot = ({ className = "" }) => (
+const GreenDot = ({ className = "" }) => (
   <span
     className={`inline-block w-1.5 h-1.5 rounded-full bg-green-500 ${className}`}
+    style={{ boxShadow: "0 0 6px #22c55e", animation: "blink 2.4s ease infinite" }}
+  />
+);
+
+const BlueDot = ({ className = "" }) => (
+  <span
+    className={`inline-block w-1.5 h-1.5 rounded-full bg-blue-500 ${className}`}
     style={{ boxShadow: "0 0 6px #22c55e", animation: "blink 2.4s ease infinite" }}
   />
 );
@@ -140,7 +148,7 @@ function Hero() {
       style={{ paddingTop: 160, paddingBottom: 100, borderColor: "#1f1f1f" }}
     >
       <div className="inline-flex items-center gap-1.5 mb-7 text-xs" style={{ color: "#888", fontFamily: "Geist Mono, monospace", letterSpacing: "-.01em" }}>
-        <Dot />
+        <GreenDot />
         V 0.5 Beta live 
       </div>
 
@@ -434,8 +442,9 @@ function Footer() {
       >
         <span>© 2026 OnlyFunds Exchange</span>
         <div className="flex items-center gap-1.5">
-          <Dot />
-          All systems operational
+          { environment === EnvironmentEnum.PROD && <GreenDot />}
+          { environment === EnvironmentEnum.DEV && <BlueDot/>}
+           ENV { environment }
         </div>
       </div>
     </footer>
