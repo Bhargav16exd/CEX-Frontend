@@ -4,6 +4,8 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
 import { useNavigate } from "react-router";
 import { createStock } from "../redux/slices/stockSlice";
+import { useErrorLoaderState } from "../hooks/useErrorLoaderState";
+import ErrorMessageComponent from "../components/ErrorMsgComponent";
 
 
 export default function CreateStockPage(){
@@ -13,9 +15,8 @@ export default function CreateStockPage(){
     --------------------------- 
   */
 
-  const [isErrorActive, setErrorActive] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isLoaderActive, setLoaderActive] = useState(false);
+  const { popError, isErrorActive, errorMessage, isLoaderActive, setLoaderActive} = useErrorLoaderState();
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -23,16 +24,6 @@ export default function CreateStockPage(){
   const [isPerpMarketSelected, setPerpMarketSelected] = useState(false);
   const [isConfirm, setIsConfirm] = useState(false);
 
-  function popError(errorMessage:string){
-    setLoaderActive(false);
-    setErrorActive(true);
-    setErrorMessage(errorMessage);
-
-    setTimeout(()=>{
-      setErrorActive(false);
-      setErrorMessage("");
-    }, 5000)
-  }
 
   function SelectSpotMarket(){
 
@@ -115,24 +106,25 @@ export default function CreateStockPage(){
 
   return(
     <NavigationLayout>
-      <div className="min-h-screen min-w-screen bg-[#0A0A0A] tracking-tight">
 
-        <div className="px-9 border-[#252525] border-b-2 py-10">
+      <div className="min-h-screen min-w-screen bg-black-standard tracking-tight">
+
+        <div className="px-9 border-b-color-standard border-b py-10">
 
           <h1 className="text-white text-3xl font-semibold ">
             Create Stock
           </h1>
-          <p className="text-[#A1A1A1] py-1">
+          <p className="text-[#A1A1A1] py-2 text-sm">
             Create Stock you like in SPOT or PERP market
           </p>
 
         </div>
 
-        <div className="px-9 py-8 flex gap-6 w-full text-white flex-col justify-center items-center">  
+        <div className="mx-auto px-9 py-8 flex gap-6 max-w-3xl text-white flex-col justify-center items-center ">  
 
-          <div className="mt-10">
-            <p className="font-mono text-xl my-4">
-              Step 1 :  SELECT STOCK NAME
+          <div className="md:mt-10 w-full">
+            <p className="my-4">
+              1. Select Stock Name
             </p>
 
             <InputComponent
@@ -149,9 +141,9 @@ export default function CreateStockPage(){
             </p>
           </div>
 
-          <div>
-            <p className="font-mono text-xl my-4">
-              Step 2 :  SELECT STOCK SYMBOL
+          <div className="w-full">
+            <p className=" my-4">
+              2. Select Stock Symbol
             </p>
 
             <InputComponent
@@ -168,20 +160,21 @@ export default function CreateStockPage(){
             </p>
           </div>
 
-          <div className="max-w-3xl w-full">
-            <p className="font-mono text-xl my-4">
-              Step 3 :  SELECT MARKET
+          <div className="w-full">
+
+            <p className="my-4">
+              3. Select Market
             </p>
 
             <p className="text-[#555555] my-2 text-xs">
               Which markets do you want <span className="font-bold">{input.title}</span> to be tradeable on?
             </p>
 
-            <div className="w-full flex gap-4 my-6">
+            <div className="w-full flex flex-col md:flex-row gap-4 my-6">
 
               <div 
               onClick={SelectSpotMarket}
-              className={`cursor-pointer w-1/2 border-2 rounded-md p-6 text-sm flex flex-col gap-4 ${isSpotMarketSelected ?  "bg-green-950 border-green-700 text-green-400" : "bg-[#1A1A1A] border-[#333333]"}`}>
+              className={`cursor-pointer md:w-1/2 border rounded-sm p-6 text-sm flex flex-col gap-4 ${isSpotMarketSelected ?  "bg-green-950 border-green-700 text-green-400" : "bg-[#1A1A1A] border-[#333333]"}`}>
                 <span className="flex justify-between">
                     <span className="text-3xl">📈</span>
                     {
@@ -194,7 +187,7 @@ export default function CreateStockPage(){
 
               <div 
               onClick={SelectPerpMarket}
-              className={`cursor-pointer w-1/2 border-2 rounded-md p-6 text-sm flex flex-col gap-4 ${isPerpMarketSelected ? "bg-blue-950  border-blue-700 text-blue-400" : "bg-[#1A1A1A] border-[#333333]"}`}>
+              className={`cursor-pointer md:w-1/2 border rounded-sm p-6 text-sm flex flex-col gap-4 ${isPerpMarketSelected ? "bg-blue-950  border-blue-700 text-blue-400" : "bg-[#1A1A1A] border-[#333333]"}`}>
                 <span className="flex justify-between">
                     <span className="text-3xl">⚡</span>
                     {
@@ -209,46 +202,37 @@ export default function CreateStockPage(){
             
           </div>
 
-          {
-            isErrorActive &&
-              <p className="text-center text-red-400 text-sm my-2 max-w-xs text-wrap overflow-hidden">
-                {errorMessage}
-              </p>
-          }
+          <ErrorMessageComponent errorActive={isErrorActive} errorMessage={errorMessage}/>
 
           <div className="max-w-3xl w-full">
             {
               !isConfirm ?
-              <button className="text-sm border bg-green-950 border-green-700 text-green-400 py-2 px-10 rounded-md outline-none cursor-pointer" onClick={OnClickConfirmDetails}>
+              <button className="text-sm border bg-green-950 border-green-700 text-green-400 py-2 px-10 rounded-sm outline-none cursor-pointer" onClick={OnClickConfirmDetails}>
                 Confirm Details
               </button>
               :
-              <button className="text-sm border bg-yellow-950 border-yello-700 text-yellow-400 py-2 px-10 rounded-md outline-none cursor-pointer mx-4" onClick={OnClickEditDetails}>
+              <button className="text-sm border bg-yellow-950 border-yello-700 text-yellow-400 py-2 px-10 rounded-sm outline-none cursor-pointer mx-4" onClick={OnClickEditDetails}>
                 Edit Details
                </button>
             }
             
             {
               isConfirm &&
-              <div className="my-6 border-t-2 border-[#333333] py-6">
-                <h1 className="text-xl">
-                  Review Details
+              <div className="my-6 border-t border-[#333333] py-6">
+                <h1 className="">
+                  4. Review Details
                 </h1>
-                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-md py-3 px-2 my-4">
-                  <p className="text-xs font-semibold text-[#555555]">STOCK NAME</p>
-                  <p className="my-2">{input.title}</p>
-                </div>
-                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-md py-3 px-2 my-4">
-                    <p className="text-xs font-semibold text-[#555555]">STOCK SYMBOL</p>
-                    <p className="my-2">{input.symbol.toLocaleUpperCase()}</p>
-                </div>
-                <div className="border-2 bg-[#1A1A1A] border-[#333333] rounded-md py-3 px-2 my-4">
-                    <p className="text-xs font-semibold text-[#555555]">MARKET TYPE</p>
-                    <p className={`mt-2 w-fit py-1 px-4 border rounded-md
+
+                <ReviewCardComponent label="STOCK NAME" value={input.title}/>
+                <ReviewCardComponent label="STOCK SYMBOL" value={input.symbol.toLocaleUpperCase()}/>
+
+                <div className="border bg-[#1A1A1A] border-[#333333] rounded-sm py-2 px-4  my-4">
+                    <p className="text-xs font-semibold text-[#555555]">MARKET</p>
+                    <p className={`mt-2 w-fit py-1 px-4 border rounded-sm text-xs
                       ${isSpotMarketSelected ? "bg-green-950 border-green-700 text-green-400" : "bg-blue-950  border-blue-700 text-blue-400"}`}>{input.market}</p>
                 </div>
 
-                <button className="text-sm border bg-green-950 border-green-700 text-green-400 py-2 px-10 rounded-md outline-none cursor-pointer my-6 animate-bounce" onClick={OnClickSubmit}>
+                <button className="text-xs border bg-green-950 border-green-700 text-green-400 py-2 px-10 rounded-sm outline-none cursor-pointer my-6 animate-bounce" onClick={OnClickSubmit}>
                   {
                     isLoaderActive ?
                     <LoaderGreen/> : 
@@ -270,10 +254,10 @@ export default function CreateStockPage(){
 function InputComponent({labelName,value,handleChange,name,inputType,placeholder}:InputComponent){
   return(
     <div className="w-full flex justify-center items-start flex-col my-1">
-      <label className="my-2 text-sm font-semibold text-[#555555]">
+      <label className="my-2 text-xs font-semibold text-[#555555]">
           {labelName}
       </label>
-      <input type={inputType} autoComplete={`new-${labelName}`} placeholder={placeholder} className="my-1 outline-none border-2 border-[#333333] rounded-md w-3xl py-3 px-2 text-sm bg-[#1A1A1A] placeholder:text-[#555555] text-white" onChange={handleChange} name={name} value={value} />
+      <input type={inputType} autoComplete={`new-${labelName}`} placeholder={placeholder} className="my-1 outline-none border border-b-color-standard rounded-sm w-full py-3 px-2 text-xs bg-[#1A1A1A] placeholder:text-[#555555] text-white" onChange={handleChange} name={name} value={value} />
     </div>
   )
 }
@@ -296,4 +280,13 @@ function LoaderGreen(){
         </svg>
       </div>
     )
+}
+
+function ReviewCardComponent({label, value}:{label:string, value:string}){
+  return(
+    <div className="border bg-[#1A1A1A] border-[#333333] rounded-sm py-2 px-4 my-4">
+      <p className="text-2xs font-semibold text-[#555555]">{label}</p>
+      <p className="text-sm my-1">{value}</p>
+    </div>
+  )
 }
