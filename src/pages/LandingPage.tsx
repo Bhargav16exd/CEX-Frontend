@@ -415,7 +415,7 @@ function Footer() {
     <footer className="border-t px-6" style={{ borderColor: "#1f1f1f", padding: "48px 24px", background: "#0a0a0a" }}>
       <div className="mx-auto flex justify-between gap-12 max-w-5xl" style={{ gridTemplateColumns: "1.4fr repeat(3,1fr)" }}>
 
-        <div className="flex flex-col md:flex-row md:cgap-10">
+        <div className="flex flex-col ">
           <div className="flex items-center gap-2 mb-2.5" style={{ fontWeight: 600, fontSize: 14, letterSpacing: "-.02em" }}>
             <span>
               OnlyFunds
