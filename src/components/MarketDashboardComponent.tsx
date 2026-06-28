@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
 import LoaderWhite from "./WhiteLoaderCompoenet";
+import ButtonGreyComponent from "./ButtonGreyComponent";
 
 interface Input {
   market:string
@@ -34,14 +35,14 @@ export default function MarketDashboardComponent({market, stockAmount, stocks, c
 
             <span className="flex w-1/2 gap-4 items-center">
               <h1 className="text-xs font-medium">{market.toLocaleUpperCase()} Market</h1>
-              <p className="text-2xs text-green-400 bg-green-950 border border-green-700 py-0.5 px-3 rounded-md font-semibold">{market}</p>    
+              <p className="text-2xs text-green-400 bg-green-950 border border-green-700 py-0.5 px-3 rounded-sm font-semibold">{market}</p>    
             </span>
             <span className="flex w-1/2 justify-end items-center gap-4">
               <p className="text-[#555555] gap-8 text-xs">{stockAmount} stocks</p>
 
               {
                 role && role == Role.ADMIN &&
-                <button className="font-medium text-white text-xs bg-[#222222] py-1 px-4  border-[#333333] border rounded-sm cursor-pointer" onClick={OnCreateStockButtonClick}>+ Add</button>
+                <ButtonGreyComponent onClickHanlder={OnCreateStockButtonClick} name={"+ Add"} />
               }
               
             </span>

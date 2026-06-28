@@ -14,7 +14,7 @@ else if(import.meta.env.PROD){
 }
 
 let BACKEND_BASE_URL = "http://localhost:8081/api"
-let WS_BASE_URL = "wss://ws.onlyfunds.in"
+let WS_BASE_URL = "ws://localhost:8082"
 
 if( environment === EnvironmentEnum.PROD ){
   BACKEND_BASE_URL = "https://api.onlyfunds.in/api"

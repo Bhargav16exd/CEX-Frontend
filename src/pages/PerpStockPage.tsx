@@ -11,6 +11,8 @@ import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
 import type { ClientWsResponse } from "@bhargav16exdd/cex"
 import { WS_BASE_URL } from "../constants";
+import { useErrorLoaderState } from "../hooks/useErrorLoaderState";
+import { OrderTypeToggleSectionComponenet, SideToggleSectionStockPageComponent, TopBarSectionStockPageComponent } from "../components/StockPageComponents";
 
 export type Orderbook = {
   updateId:number
@@ -35,24 +37,14 @@ enum OrderType {
 type OrderbookLevel = [number, number]; // [price, quantity]
 
 export function PerpStockPage(){
+
   // ------- UTILITY SECTION -------
 
   const { stockSymbol } = useParams();
-  const [isErrorActive, setErrorActive] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { popError, isErrorActive, errorMessage} = useErrorLoaderState();
 
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate();
-
-  function popError(errorMessage:string){
-    setErrorActive(true);
-    setErrorMessage(errorMessage);
-
-    setTimeout(()=>{
-      setErrorActive(false);
-      setErrorMessage("");
-    }, 5000)
-  }
 
   // ------- HISTORY SECTION ---------
   const [isOpenOrderActive, setIsOpenOrderActive] = useState(true);
@@ -346,15 +338,22 @@ export function PerpStockPage(){
     <NavigationLayout>
 
       {/* Trade and Ticker Page */}
-      <div className="min-h-screen min-w-screen bg-[#111111] flex text-white">
+      <div className="min-h-screen min-w-screen bg-black-standard flex text-white">
         
         {/* ------- CANDLES & ORDERBOOK SECTION -------*/}
         <div className="w-[80%] border-[#252525] border-r-2 flex flex-col">
 
-          <div className="w-full py-10 border-[#252525] border-b-2"></div>
+          <TopBarSectionStockPageComponent
+            symbol={stockSymbol!}
+            market={"perp"} 
+            lastTradedPrice={64034}
+            highPrice={64034}
+            lowPrice={64034}
+            volume={64034}
+          />
 
           <div className="flex w-full">
-             <div className="w-[75%] border-[#252525] border-r-2">
+             <div className="w-[80%] border-[#252525] border-r-2">
               <CandleComponent/>
             </div>
             <Orderbook Orderbook={orderbook}/>
@@ -394,24 +393,20 @@ export function PerpStockPage(){
 
         {/* ------- LONG OR SHORT SECTION -------*/}
         <div className="w-[20%]">
-          <span className="flex text-[#555555] text-sm font-semibold text-center border-[#252525] border-b-2 ">
-            <div className={`w-1/2 cursor-pointer py-4 ${isLongSectionActive && "border-b-2 border-green-400 text-green-400"}`} onClick={OnClickLongSection}>
-              Buy / Long
-            </div>
-            <div className={`w-1/2 cursor-pointer py-4 ${isShortSectionActive && "border-b-2 border-red-400 text-red-400"}`} onClick={OnClickShortSection}>
-              Sell / Short
-            </div>
-          </span>
+
+         <SideToggleSectionStockPageComponent
+            leftSide="Buy / Long"
+            rightSide="Sell / Short"
+            isLeftSectionActive={isLongSectionActive}
+            isRightSectionActive={isShortSectionActive}
+            onClickLeftSection={OnClickLongSection}
+            onClickRightSection={OnClickShortSection}
+          />
 
         {/* FORM */}
         <div className="px-4">
 
-            <span className="flex text-center justify-center text-sm my-4 border py-2 rounded-md border-[#252525]">
-              <div className="w-1/2 flex justify-center items-center">
-                <p className="rounded-md text-blue-400 bg-blue-950 border border-blue-700 w-fit px-4 py-1">Limit</p>
-              </div>
-              <div className="w-1/2 cursor-not-allowed flex justify-center items-center">Market</div>
-            </span>
+            <OrderTypeToggleSectionComponenet/>
 
             <div className="flex text-sm my-4 justify-between items-center">
               <p className="text-[#555555]">Available Balance</p>

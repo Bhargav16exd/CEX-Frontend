@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router";
 import NavigationLayout from "../components/NavigationComponent";
 import { useEffect, useRef, useState } from "react";
-import type { InputLabelComponent } from "../components/InputLabelComponent";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
 import LoaderWhite from "../components/WhiteLoaderCompoenet";
@@ -11,6 +10,9 @@ import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
 import { cancelSpotOrder, fetchOpenOrders, getBalance, getOrderbook, placeSpotOrder } from "../redux/slices/spotSlice";
 import type { ClientWsResponse } from "@bhargav16exdd/cex";
 import { WS_BASE_URL } from "../constants";
+import { useErrorLoaderState } from "../hooks/useErrorLoaderState";
+import ErrorMessageComponent from "../components/ErrorMsgComponent";
+import { OrderTypeToggleSectionComponenet, SideToggleSectionStockPageComponent, StatusBadge, TopBarSectionStockPageComponent } from "../components/StockPageComponents";
 
 export type Orderbook = {
   updateId:number
@@ -19,34 +21,32 @@ export type Orderbook = {
 }
 
 
+
+
 interface WsDepthData {
   asks:OrderbookLevel[],
   bids:OrderbookLevel[],
   updateId:number
 }
 
+//@ts-ignore
+enum OrderSide {
+  ask="ask",
+  bid="bid"
+}
+
 // Types
 type OrderbookLevel = [number, number]; // [price, quantity]
 
 export function SpotStockPage(){
-  // ------- UTILITY SECTION -------
 
+  // ------- UTILITY SECTION -------
   const { stockSymbol } = useParams();
-  const [isErrorActive, setErrorActive] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { popError, isErrorActive, errorMessage} = useErrorLoaderState();
 
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate();
 
-  function popError(errorMessage:string){
-    setErrorActive(true);
-    setErrorMessage(errorMessage);
-
-    setTimeout(()=>{
-      setErrorActive(false);
-      setErrorMessage("");
-    }, 5000)
-  }
 
   // ------- HISTORY SECTION ---------
   const [isOpenOrderActive, setIsOpenOrderActive] = useState(true);
@@ -332,31 +332,39 @@ export function SpotStockPage(){
     <NavigationLayout>
 
       {/* Trade and Ticker Page */}
-      <div className="min-h-screen min-w-screen bg-[#111111] flex text-white">
+      <div className="min-h-screen min-w-screen bg-black-standard flex text-white">
         
         {/* ------- CANDLES & ORDERBOOK SECTION -------*/}
-        <div className="w-[80%] border-[#252525] border-r-2 flex flex-col">
+        <div className="w-[80%] rounded-sm flex flex-col my-4 mr-2 ml-4 ">
 
-          <div className="w-full py-10 border-[#252525] border-b-2"></div>
+          <TopBarSectionStockPageComponent
+            symbol={stockSymbol!}
+            market={"spot"} 
+            lastTradedPrice={64034.01}
+            highPrice={64034}
+            lowPrice={64034}
+            volume={64034}
+          />
 
-          <div className="flex w-full">
-             <div className="w-[75%] border-[#252525] border-r-2">
+          <div className="flex w-full gap-4">
+             <div className="w-[80%] h-fit px-4 py-2 bg-[#0A0A0A] rounded-sm ">
               <CandleComponent/>
             </div>
             <Orderbook Orderbook={orderbook}/>
           </div>
           
-          <div className="flex flex-col">
-            <span className="flex border border-[#252525] text-[#A1A1A1] px-10 gap-8 text-sm tracking-tight">
+          <div className="flex flex-col bg-[#0A0A0A] mt-4 rounded-sm overflow-hidden">
+
+            <span className="flex text-[#A1A1A1] p-2 gap-8 text-xs tracking-tight ">
               <div 
               onClick={OnClickOpenOrder}
-              className={`py-2 px-4 cursor-pointer ${isOpenOrderActive && "border-b-2 border-white text-white"}`}>Open Orders</div>
+              className={`py-2 px-4 cursor-pointer ${isOpenOrderActive && "bg-[#1A1A1A] rounded-sm"}`}>Open Orders</div>
               <div 
               onClick={OnClickFills}
-              className={`py-2 px-4 cursor-pointer ${isFillsActive && "border-b-2 border-white text-white"}`}>Fills</div>
+              className={`py-2 px-4 cursor-pointer ${isFillsActive && "bg-[#1A1A1A] rounded-sm"}`}>Fills</div>
               <div 
               onClick={OnClickOrderHistory}
-              className={`py-2 px-4 cursor-pointer ${isOrderHistoryActive && "border-b-2 border-white text-white"}`}>Order History</div>
+              className={`py-2 px-4 cursor-pointer ${isOrderHistoryActive && "bg-[#1A1A1A] rounded-sm"}`}>Order History</div>
             </span>
             {
               isOpenOrderActive && <OpenOrdersComponent/>
@@ -373,36 +381,30 @@ export function SpotStockPage(){
         </div>
 
         {/* ------- LONG OR SHORT SECTION -------*/}
-        <div className="w-[20%]">
-          <span className="flex text-[#555555] text-sm font-semibold text-center border-[#252525] border-b-2 ">
-            <div className={`w-1/2 cursor-pointer py-4 ${isBidSectionActive && "border-b-2 border-green-400 text-green-400"}`} onClick={OnClickBidSection}>
-              Bid
-            </div>
-            <div className={`w-1/2 cursor-pointer py-4 ${isAskSectionActive && "border-b-2 border-red-400 text-red-400"}`} onClick={OnClickAskSection}>
-              Ask
-            </div>
-          </span>
+        <div className="h-fit w-[20%] rounded-sm bg-[#0A0A0A] my-4 mx-2">
+
+          <SideToggleSectionStockPageComponent
+            leftSide="Bid"
+            rightSide="Ask"
+            isLeftSectionActive={isBidSectionActive}
+            isRightSectionActive={isAskSectionActive}
+            onClickLeftSection={OnClickBidSection}
+            onClickRightSection={OnClickAskSection}
+          />
 
         {/* FORM */}
-        <div className="px-4">
+        <div className="px-4 text-xs tracking-tighter">
 
-            <span className="flex text-center justify-center text-sm my-4 border py-2 rounded-md border-[#252525]">
-              <div className="w-1/2 flex justify-center items-center">
-                <p className="rounded-md text-blue-400 bg-blue-950 border border-blue-700 w-fit px-4 py-1">Limit</p>
-              </div>
-              <div className="w-1/2 cursor-not-allowed flex justify-center items-center">Market</div>
-            </span>
+            <OrderTypeToggleSectionComponenet/>
 
-            <div className="flex text-sm my-4 justify-between items-center">
-              <p className="text-[#555555]">Available Balance</p>
-              <div>{ balance !== undefined ?  <>${balance}</> : <LoaderWhite/>}</div>
+            <div className="flex mt-5 my-2 justify-between items-center">
+              <p className="text-[#555555] underline underline-offset-1 decoration-dotted">Balance.</p>
+              <p className="font-mono">{ balance !== undefined ?  <>{balance} USD </> : <LoaderWhite/>}</p>
             </div>
-
-            <div className="flex text-sm my-4 justify-between items-center">
-              <p className="text-[#555555]">Available Stocks</p>
-              <div>{ stockBalance !== undefined && lockedStockBalance !== undefined ?  <> {stockBalance - lockedStockBalance} {stockSymbol?.toUpperCase()} </> : <LoaderWhite/>}</div>
+            <div className="flex my-2 justify-between items-center">
+              <p className="text-[#555555] underline underline-offset-1 decoration-dotted">Avail. Stocks</p>
+              <p className="font-mono ">{ stockBalance !== undefined && lockedStockBalance !== undefined ?  <> {stockBalance - lockedStockBalance} {stockSymbol?.toUpperCase()} </> : <LoaderWhite/>}</p>
             </div>
-
             <InputLabelComponent
               labelName="PRICE"
               value={input.price}
@@ -410,6 +412,7 @@ export function SpotStockPage(){
               name="price"
               inputType="text"
               placeholder="0"
+              unit="$USD"
             />
 
             <InputLabelComponent
@@ -419,41 +422,47 @@ export function SpotStockPage(){
               name="quantity"
               inputType="text"
               placeholder="0"
+              unit={stockSymbol?.toLocaleUpperCase()}
             />
 
-            {
-              isErrorActive &&
-              <p className="text-center text-red-400 text-sm my-2 max-w-xs text-wrap overflow-hidden">
-                {errorMessage}
-              </p>
-            }
+            <div className="flex mt-4 justify-between items-center">
+              <p className="text-[#555555] underline underline-offset-1 decoration-dotted">Order Val.</p>
+              <p className="font-mono ">{Number(input?.price) * Number(input?.quantity)} USD</p>
+            </div>
+
+            <div className="flex my-2 justify-between items-center">
+              <p className="text-[#555555] underline underline-offset-1 decoration-dotted">Plat. Fee</p>
+              <p className="font-mono ">0 USD</p>
+            </div>
+
+            <ErrorMessageComponent errorActive={isErrorActive} errorMessage={errorMessage}/>
             
             {
               isBidSectionActive &&
               <button 
               onClick={OnClickPlaceOrder}
-              className="rounded-md w-full py-2 px-2 text-green-400 bg-green-950 border border-green-700 my-6 active:scale-95 transition-transform">Bid</button>
+              className="rounded-sm w-full py-2 px-2 text-white font-bold bg-green-700 my-6 active:scale-95 transition-transform cursor-pointer">Bid</button>
             }
 
             {
               isAskSectionActive &&
               <button 
               onClick={OnClickPlaceOrder}
-              className="rounded-md w-full py-2 px-2 text-red-400 bg-red-950 border border-red-700 my-6 active:scale-95 transition-transform">Ask</button>
+              className="rounded-sm w-full py-2 px-2 text-white font-bold bg-red-800  my-6 active:scale-95 transition-transform cursor-pointer">Ask</button>
             }
 
             {
               isOrderResponsePanelActive &&
-              <div className="my-4 text-green-400 bg-[#0D1F14] border border-green-700 rounded-md">
-                <div className="py-3 px-6 font-medium flex items-center gap-4 border-b-2 border-green-700 text-sm">
+              <div className="my-4 text-green-400 bg-[#0D1F14] border border-green-700 rounded-sm">
+                <div className="py-3 px-6 font-medium flex items-center gap-4 border-b border-green-700 text-xs">
                   <div className="h-1.5 w-1.5 animate-ping rounded-full bg-green-400 z-10 "></div>
                   <p>ORDER FILLED</p>
                 </div>
-                <div className="flex py-2 px-6 justify-between text-xs text-[#3D6B4F]">
+                <div className="flex py-2 px-6 justify-between text-2xs text-[#3D6B4F]">
                   <div className="w-1/2">TOTAL QTY</div>
                   <div className="w-1/2">FILLED QTY</div>
                 </div>
-                <span className="flex px-6 text-sm mb-4 text-white">
+                <span className="flex px-6 text-xs mb-4 text-white">
                   <div className="w-1/2 font-bold">{orderResponse.totalQuantity}</div>
                   <div className="w-1/2 font-bold">{orderResponse.filledQuantity}</div>
                 </span>
@@ -470,16 +479,24 @@ export function SpotStockPage(){
   )
 }
 
-export default function InputLabelComponent({labelName,value,handleChange,name,inputType,placeholder}:InputLabelComponent){
+export default function InputLabelComponent({labelName, value, handleChange, name, inputType, placeholder, unit}:any){
   return(
     <div className="w-full flex justify-center items-start flex-col my-1">
-      <label className="my-2 text-xs font-semibold text-[#555555]">
+      <label className="my-2 text-2xs font-semibold text-[#555555]">
           {labelName}
       </label>
-      <input type={inputType} autoComplete={`new-${labelName}`} placeholder={placeholder} className="my-1 outline-none border-2 border-[#333333] rounded-md w-full py-3 px-2 text-sm bg-[#1A1A1A] placeholder:text-[#555555] text-white" onChange={handleChange} name={name} value={value} />
+      <div className="flex justify-between items-center
+      my-1  border border-b-color-standard rounded-sm w-full py-3 px-2 text-xs bg-[#111111] placeholder:text-[#555555] text-white">
+        <input 
+        className="outline-none"
+        type={inputType} autoComplete={`new-${labelName}`} placeholder={placeholder} onChange={handleChange} name={name} value={value} />
+        <p className="text-[#555555]">{unit}</p>
+      </div>
+      
     </div>
   )
 }
+
 
 function OpenOrdersComponent(){
 
@@ -529,9 +546,10 @@ function OpenOrdersComponent(){
 
 
   return(
-    <div className="mb-10 uppercase">
+    <div className="mb-10">
       
-      <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
+      <div 
+      className="flex w-auto px-14 py-1.5 text-2xs bg-[#111111] rounded-sm m-2">
         <span className="w-[15%]">MARKET</span>
         <span className="w-[10%]">SIDE</span>
         <span className="w-[10%]">TYPE</span>
@@ -539,9 +557,8 @@ function OpenOrdersComponent(){
         <span className="w-[15%]">QTY</span>
         <span className="w-[15%]">FILLED</span>
         <span className="w-[15%]">STATUS</span>
-      
       </div>
-      <div >
+      <div className="m-2">
         {
           orders ?
           orders.length > 0
@@ -549,16 +566,17 @@ function OpenOrdersComponent(){
           orders.map((order:any, idx:number)=>(
             <div 
             key={idx}
-            className="flex justify-start items-center px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
-              <span className="w-[15%]">SPOT-{order.symbol.toUpperCase()}</span>
-              <span className="w-[10%]">{order.side}</span>
+            className="flex justify-start items-center px-14 py-1.5 text-2xs border-b border-b-color-standard text-[#A1A1A1] font-mono uppercase hover:bg-[#0A0A0A]">
+              <span className="w-[15%] font-bold text-white">SPOT-{order.symbol.toUpperCase()}</span>
+              <span className={`w-[10%] ${ order.side === OrderSide.ask ? "text-red-400" : "text-green-400"}`}>{order.side}</span>
               <span className="w-[10%]">{order.type}</span>
               <span className="w-[10%]">{order.price}</span>
               <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
               <span className="w-[15%]">{order.filledQuantity} {order.symbol.toUpperCase()}</span>
-              <span className={`w-[15%]`}>{order.status.toUpperCase()}</span>
-              <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer " 
-              onClick={()=> OnClickCancelOrder(order.orderId)}>Close</button>
+              <span className={`w-[15%]`}><StatusBadge status={order.status}/></span>
+              <p 
+              className="transform-none underline underline-offset-1 cursor-pointer"
+              onClick={()=> OnClickCancelOrder(order.orderId)}>Close</p>
             </div>    
           ))
           :
@@ -571,13 +589,13 @@ function OpenOrdersComponent(){
       </div>
 
       <div className="flex justify-end items-center gap-10 py-6 px-6">
-        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
+        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-sm px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
           Prev
         </button>
         <p className="text-gray-400 text-sm">
           {offset}
         </p>
-        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
+        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-sm px-4 text-black cursor-pointer">
           Next
         </button>
       </div>
@@ -631,7 +649,7 @@ function FillHistoryComponent(){
   return(
     <div className="mb-10 uppercase">
       
-      <div className="flex w-full border-[#252525] border-b text-[#414141] px-14 py-1 text-xs">
+      <div className="flex w-auto px-14 py-1.5 text-2xs bg-[#111111] rounded-sm m-2">
         <span className="w-[15%]">Market</span>
         <span className="w-[10%]">Side</span>
         <span className="w-[10%]">Price</span>
@@ -641,14 +659,16 @@ function FillHistoryComponent(){
         <span className="w-[15%]">Time</span>
         
       </div>
-      <div>
+      <div className="m-2">
         {
           fills ?
           fills.length > 0 ?
           fills.map((fill:any)=>(
-            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
-              <span className="w-[15%]">SPOT-{fill.symbol.toUpperCase()}</span>
-              <span className="w-[10%]">{fill.side}</span>
+            <div 
+            className="flex justify-start items-center px-14 py-3 text-2xs border-b border-b-color-standard text-[#A1A1A1] font-mono uppercase hover:bg-[#0A0A0A]"
+            >
+              <span className="w-[15%] font-bold text-white">SPOT-{fill.symbol.toUpperCase()}</span>
+              <span className={`w-[10%] ${ fill.side === OrderSide.ask ? "text-red-400" : "text-green-400"}`}>{fill.side}</span>
               <span className="w-[10%]">{fill.price}</span>
               <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
               <span className="w-[10%]">0</span>
@@ -672,13 +692,13 @@ function FillHistoryComponent(){
       </div>
 
       <div className="flex justify-end items-center gap-10 py-6 px-6">
-        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
+        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-sm px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
           Prev
         </button>
         <p className="text-gray-400 text-sm">
           {offset}
         </p>
-        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
+        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-sm px-4 text-black cursor-pointer">
           Next
         </button>
       </div>
@@ -731,9 +751,11 @@ function OrderHistoryComponent(){
 
 
   return(
-    <div className="mb-10 uppercase">
+    <div className="mb-10">
       
-      <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
+      <div 
+      className="flex w-auto px-14 py-1.5 text-2xs bg-[#111111] rounded-sm m-2"
+      >
         <span className="w-[15%]">MARKET</span>
         <span className="w-[10%]">SIDE</span>
         <span className="w-[10%]">TYPE</span>
@@ -743,23 +765,20 @@ function OrderHistoryComponent(){
         <span className="w-[15%]">TIME</span>
         
       </div>
-      <div >
+      <div className="m-2">
         {
           orders ?
           orders.length > 0 ?
           orders.map((order:any)=>(
-            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
-              <span className="w-[15%]">SPOT-{order.symbol.toUpperCase()}</span>
-              <span className="w-[10%]">{order.side}</span>
+            <div 
+            className="flex justify-start items-center px-14 py-1.5 text-2xs border-b border-b-color-standard text-[#A1A1A1] font-mono uppercase hover:bg-[#0A0A0A]"
+            >
+              <span className="w-[15%] text-white font-bold">SPOT-{order.symbol.toUpperCase()}</span>
+              <span className={`w-[10%] ${ order.side === OrderSide.ask ? "text-red-400" : "text-green-400"}`}>{order.side}</span>
               <span className="w-[10%]">{order.type}</span>
               <span className="w-[10%]">{order.price}</span>
               <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
-              <span className={`w-[15%] 
-                ${order.status === "closed" && "text-green-400" }
-                ${order.status === "open" && "text-yellow-400"}
-                `}
-                
-                >{order.status}</span>
+              <span className={`w-[15%]`}><StatusBadge status={order.status}/></span>
               <span className="w-[15%]">{new Date(order.createdAt).toLocaleString("en-us",{
                 month: "short",
                 day: "numeric",
@@ -779,13 +798,13 @@ function OrderHistoryComponent(){
       </div>
 
       <div className="flex justify-end items-center gap-10 py-6 px-6">
-        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
+        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-sm px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
           Prev
         </button>
         <p className="text-gray-400 text-sm">
           {offset}
         </p>
-        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
+        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-sm px-4 text-black cursor-pointer">
           Next
         </button>
       </div>
