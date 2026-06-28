@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router";
 import NavigationLayout from "../components/NavigationComponent";
 import { useEffect, useRef, useState } from "react";
-import type { InputLabelComponent } from "../components/InputLabelComponent";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
 import { fetchOpenContract, fetchOpenOrders, getBalance, getOrderbook, placePerpOrder } from "../redux/slices/perpSlice";
@@ -9,10 +8,16 @@ import LoaderWhite from "../components/WhiteLoaderCompoenet";
 import CandleComponent from "../components/CandleComponent";
 import { Orderbook } from "../components/OrderbookComponent";
 import { fetchFills, fetchOrders } from "../redux/slices/historySlice";
-import type { ClientWsResponse } from "@bhargav16exdd/cex"
+import { MarketType, type ClientWsResponse } from "@bhargav16exdd/cex"
 import { WS_BASE_URL } from "../constants";
 import { useErrorLoaderState } from "../hooks/useErrorLoaderState";
 import { OrderTypeToggleSectionComponenet, SideToggleSectionStockPageComponent, TopBarSectionStockPageComponent } from "../components/StockPageComponents";
+import ErrorMessageComponent from "../components/ErrorMsgComponent";
+import ButtonGreenComponent from "../components/ButtonGreenComponent";
+import ButtonRedComponent from "../components/ButtonRedComponent";
+import PlacedOrderResponseComponent from "../components/PlacedOrderResponseComponent";
+import OpenOrdersComponentStockPage from "../components/OpenOrdersComponentStockPage";
+import OrderHistoryComponentStockPage from "../components/OrderHistoryComponentStockPage";
 
 export type Orderbook = {
   updateId:number
@@ -341,7 +346,7 @@ export function PerpStockPage(){
       <div className="min-h-screen min-w-screen bg-black-standard flex text-white">
         
         {/* ------- CANDLES & ORDERBOOK SECTION -------*/}
-        <div className="w-[80%] border-[#252525] border-r-2 flex flex-col">
+        <div className="w-[80%] flex flex-col my-4 mr-2 ml-4">
 
           <TopBarSectionStockPageComponent
             symbol={stockSymbol!}
@@ -352,30 +357,30 @@ export function PerpStockPage(){
             volume={64034}
           />
 
-          <div className="flex w-full">
-             <div className="w-[80%] border-[#252525] border-r-2">
+          <div className="flex w-full gap-4">
+             <div className="w-[80%] h-fit px-4 py-2 bg-[#0A0A0A] rounded-sm">
               <CandleComponent/>
             </div>
             <Orderbook Orderbook={orderbook}/>
           </div>
           
-          <div className="flex flex-col">
-            <span className="flex border border-[#252525] text-[#A1A1A1] px-10 gap-8 text-sm tracking-tight">
+          <div className="flex flex-col bg-[#0A0A0A] mt-4 rounded-sm overflow-hidden">
+            <span className="flex text-[#A1A1A1] p-2 gap-8 text-xs tracking-tight ">
               <div 
               onClick={OnClickOpenOrder}
-              className={`py-2 px-4 cursor-pointer ${isOpenOrderActive && "border-b-2 border-white text-white"}`}>Open Orders</div>
+              className={`py-2 px-4 cursor-pointer ${isOpenOrderActive && "bg-[#1A1A1A] rounded-sm"}`}>Open Orders</div>
               <div 
               onClick={OnClickPosition}
-              className={`py-2 px-4 cursor-pointer ${isContractActive && "border-b-2 border-white text-white"}`}>Contract</div>
+              className={`py-2 px-4 cursor-pointer ${isContractActive && "bg-[#1A1A1A] rounded-sm"}`}>Contract</div>
               <div 
               onClick={OnClickFills}
-              className={`py-2 px-4 cursor-pointer ${isFillsActive && "border-b-2 border-white text-white"}`}>Fills</div>
+              className={`py-2 px-4 cursor-pointer ${isFillsActive && "bg-[#1A1A1A] rounded-sm"}`}>Fills</div>
               <div 
               onClick={OnClickOrderHistory}
-              className={`py-2 px-4 cursor-pointer ${isOrderHistoryActive && "border-b-2 border-white text-white"}`}>Order History</div>
+              className={`py-2 px-4 cursor-pointer ${isOrderHistoryActive && "bg-[#1A1A1A] rounded-sm"}`}>Order History</div>
             </span>
             {
-              isOpenOrderActive && <OpenOrdersComponent/>
+              isOpenOrderActive && <OpenOrdersComponentStockPage stockSymbol={stockSymbol!} fetchOpenOrders={fetchOpenOrders} market={MarketType.perp} cancelOrder={()=>{}}/>
             }
             {
               isContractActive && <OpenContractComponent/>
@@ -384,7 +389,7 @@ export function PerpStockPage(){
               isFillsActive && <FillHistoryComponent/>
             }
             {
-              isOrderHistoryActive && <OrderHistoryComponent/>
+              isOrderHistoryActive && <OrderHistoryComponentStockPage stockSymbol={stockSymbol!} fetchOrders={fetchOrders} market={MarketType.perp}/>
             }
 
           </div>
@@ -392,7 +397,7 @@ export function PerpStockPage(){
         </div>
 
         {/* ------- LONG OR SHORT SECTION -------*/}
-        <div className="w-[20%]">
+        <div className="h-fit w-[20%] rounded-sm bg-[#0A0A0A] my-4 mx-2">
 
          <SideToggleSectionStockPageComponent
             leftSide="Buy / Long"
@@ -404,13 +409,13 @@ export function PerpStockPage(){
           />
 
         {/* FORM */}
-        <div className="px-4">
+        <div className="px-4 text-xs tracking-tighter">
 
             <OrderTypeToggleSectionComponenet/>
 
-            <div className="flex text-sm my-4 justify-between items-center">
-              <p className="text-[#555555]">Available Balance</p>
-              <div>{ balance !== undefined ?  <>${balance}</> : <LoaderWhite/>}</div>
+            <div className="flex mt-5 my-2 justify-between items-center">
+              <p className="text-[#555555] underline underline-offset-1 decoration-dotted">Balance.</p>
+              <p className="font-mono">{ balance !== undefined ?  <>{balance} USD </> : <LoaderWhite/>}</p>
             </div>
 
             <InputLabelComponent
@@ -431,43 +436,47 @@ export function PerpStockPage(){
               placeholder="0"
             />
 
-            {
-              isErrorActive &&
-              <p className="text-center text-red-400 text-sm my-2 max-w-xs text-wrap overflow-hidden">
-                {errorMessage}
-              </p>
-            }
+            <div className="flex mt-4 justify-between items-center">
+              <p className="text-[#555555] underline underline-offset-1 decoration-dotted">Order Val.</p>
+              <p className="font-mono ">{Number(input?.price) * Number(input?.quantity)} USD</p>
+            </div>
+
+            <div className="flex my-2 justify-between items-center">
+              <p className="text-[#555555] underline underline-offset-1 decoration-dotted">Plat. Fee</p>
+              <p className="font-mono ">0 USD</p>
+            </div>
+
+            <div className="flex my-2 justify-between items-center">
+              <p className="text-[#555555] underline underline-offset-1 decoration-dotted">Liquidation. Price</p>
+              <p className="font-mono ">0 USD</p>
+            </div>
+
+            <ErrorMessageComponent
+              errorActive={isErrorActive} errorMessage={errorMessage}
+            />
             
             {
               isLongSectionActive &&
-              <button 
-              onClick={OnClickPlaceOrder}
-              className="rounded-md w-full py-2 px-2 text-green-400 bg-green-950 border border-green-700 my-6 active:scale-95 transition-transform">Buy/Long</button>
+              <ButtonGreenComponent 
+                OnClickHandler={OnClickPlaceOrder}
+                btnName="Buy / Long"
+              />
             }
 
             {
               isShortSectionActive &&
-              <button 
-              onClick={OnClickPlaceOrder}
-              className="rounded-md w-full py-2 px-2 text-red-400 bg-red-950 border border-red-700 my-6 active:scale-95 transition-transform">Sell/Short</button>
+              <ButtonRedComponent
+                OnClickHandler={OnClickPlaceOrder}
+                btnName="Sell / Short"
+              />
             }
 
             {
               isOrderResponsePanelActive &&
-              <div className="my-4 text-green-400 bg-[#0D1F14] border border-green-700 rounded-md">
-                <div className="py-3 px-6 font-medium flex items-center gap-4 border-b-2 border-green-700 text-sm">
-                  <div className="h-1.5 w-1.5 animate-ping rounded-full bg-green-400 z-10 "></div>
-                  <p>ORDER FILLED</p>
-                </div>
-                <div className="flex py-2 px-6 justify-between text-xs text-[#3D6B4F]">
-                  <div className="w-1/2">TOTAL QTY</div>
-                  <div className="w-1/2">FILLED QTY</div>
-                </div>
-                <span className="flex px-6 text-sm mb-4 text-white">
-                  <div className="w-1/2 font-bold">{orderResponse.totalQuantity}</div>
-                  <div className="w-1/2 font-bold">{orderResponse.filledQuantity}</div>
-                </span>
-              </div>
+              <PlacedOrderResponseComponent
+                totalQty={orderResponse.totalQuantity}
+                fillQty={orderResponse.filledQuantity}
+              />
             }
             
         </div>
@@ -480,107 +489,24 @@ export function PerpStockPage(){
   )
 }
 
-export default function InputLabelComponent({labelName,value,handleChange,name,inputType,placeholder}:InputLabelComponent){
+export default function InputLabelComponent({labelName, value, handleChange, name, inputType, placeholder, unit}:any){
   return(
     <div className="w-full flex justify-center items-start flex-col my-1">
-      <label className="my-2 text-xs font-semibold text-[#555555]">
+      <label className="my-2 text-2xs font-semibold text-[#555555]">
           {labelName}
       </label>
-      <input type={inputType} autoComplete={`new-${labelName}`} placeholder={placeholder} className="my-1 outline-none border-2 border-[#333333] rounded-md w-full py-3 px-2 text-sm bg-[#1A1A1A] placeholder:text-[#555555] text-white" onChange={handleChange} name={name} value={value} />
-    </div>
-  )
-}
-
-function OpenOrdersComponent(){
-
-  const {stockSymbol} = useParams()
-
-  const dispatch = useDispatch<AppDispatch>();
-  const [orders, setOrders] = useState<any>(null);
-
-  const [offset, setOffset] = useState(0);
-
-  function NextPage(){
-    const value = offset
-    setOffset(value + 5)
-  }
-
-  function PrevPage(){
-    if(offset === 0) return;
-    const value = offset
-    setOffset(value - 5)
-  }
-
-  async function fetch(){
-    try {
-  
-      const response = await dispatch(fetchOpenOrders({symbol:stockSymbol!, count:5, offset})).unwrap()
-      setOrders(response?.data)
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(()=>{
-    setOrders(null);
-    fetch()
-  },[offset])
-
-
-  return(
-    <div className="mb-10 uppercase">
+      <div className="flex justify-between items-center
+      my-1  border border-b-color-standard rounded-sm w-full py-3 px-2 text-xs bg-[#111111] placeholder:text-[#555555] text-white">
+        <input 
+        className="outline-none"
+        type={inputType} autoComplete={`new-${labelName}`} placeholder={placeholder} onChange={handleChange} name={name} value={value} />
+        <p className="text-[#555555]">{unit}</p>
+      </div>
       
-      <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
-        <span className="w-[15%]">MARKET</span>
-        <span className="w-[10%]">SIDE</span>
-        <span className="w-[10%]">TYPE</span>
-        <span className="w-[10%]">PRICE</span>
-        <span className="w-[15%]">QTY</span>
-        <span className="w-[15%]">FILLED</span>
-        <span className="w-[15%]">STATUS</span>
-        
-      </div>
-      <div >
-        {
-          orders ?
-
-          orders.length > 0 
-            ?
-            orders?.map((order:any)=>(
-              <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
-                <span className="w-[15%] font-medium">PERP-{order.symbol.toUpperCase()}</span>
-                <span className="w-[10%]">{order.side}</span>
-                <span className="w-[10%]">{order.type}</span>
-                <span className="w-[10%]">{order.price}</span>
-                <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
-                <span className="w-[15%]">{order.filledQuantity} {order.symbol.toUpperCase()}</span>
-                <span className={`w-[15%]`}>{order.status.toUpperCase()}</span>
-              </div>    
-            ))
-            :
-            <div className="w-full text-center my-8 text-sm text-[#555555]">No Open Orders</div>
-          :
-          <div className="flex justify-center items-center py-10">
-            <LoaderWhite/>
-          </div>
-        }
-      </div>
-
-      <div className="flex justify-end items-center gap-10 py-6 px-6">
-        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
-          Prev
-        </button>
-        <p className="text-gray-400 text-sm">
-          {offset}
-        </p>
-        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
-          Next
-        </button>
-      </div>
     </div>
   )
 }
+
 
 function OpenContractComponent(){
 
@@ -728,113 +654,6 @@ function FillHistoryComponent(){
             ))
             :
             <div className="w-full text-center my-8 text-sm text-[#555555]">Empty fills History</div>
-          :
-          <div className="flex justify-center items-center py-10">
-            <LoaderWhite/>
-          </div>
-        }
-      </div>
-
-      <div className="flex justify-end items-center gap-10 py-6 px-6">
-        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
-          Prev
-        </button>
-        <p className="text-gray-400 text-sm">
-          {offset}
-        </p>
-        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
-          Next
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function OrderHistoryComponent(){
-
-  const {stockSymbol} = useParams()
-
-  const dispatch = useDispatch<AppDispatch>();
-  const [orders, setOrders] = useState<any>(null);
-  const [offset, setOffset] = useState(0);
-
-  function NextPage(){
-    const value = offset
-    setOffset(value + 5)
-  }
-
-  function PrevPage(){
-    if(offset === 0) return;
-    const value = offset
-    setOffset(value - 5)
-  }
-
-  async function fetch(){
-    try {
-      
-      const requestPayload = {
-        count:"5",
-        offset:offset.toString(),
-        market:"perp",
-        symbol:stockSymbol!
-      }
-
-      const response = await dispatch(fetchOrders(requestPayload)).unwrap()
-
-      setOrders(response?.data)
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(()=>{
-    setOrders(null);
-    fetch()
-  },[offset])
-
-
-  return(
-    <div className="mb-10 uppercase">
-      
-      <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
-        <span className="w-[15%]">MARKET</span>
-        <span className="w-[10%]">SIDE</span>
-        <span className="w-[10%]">TYPE</span>
-        <span className="w-[10%]">PRICE</span>
-        <span className="w-[15%]">QTY</span>
-        <span className="w-[15%]">STATUS</span>
-        
-      </div>
-      <div >
-        {
-          orders ?
-          orders.length > 0 ?
-          orders.map((order:any)=>(
-            <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
-              <span className="w-[15%]">PERP-{order.symbol.toUpperCase()}</span>
-              <span className="w-[10%]">{order.side}</span>
-              <span className="w-[10%]">{order.type}</span>
-              <span className="w-[10%]">{order.price}</span>
-              <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
-              <span className={`w-[15%] 
-                ${order.status === "closed" && "text-green-400" }
-                ${order.status === "open" && "text-yellow-400"}
-                `}
-                
-                >{order.status}</span>
-              <span className="w-[15%]">{new Date(order.createdAt).toLocaleString("en-us",{
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second:'2-digit',
-                hour12: false,
-              })}</span>
-            </div>    
-          ))
-          :
-          <div className="w-full text-center my-8 text-sm text-[#555555]">empty order history</div>
           :
           <div className="flex justify-center items-center py-10">
             <LoaderWhite/>

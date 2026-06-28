@@ -83,10 +83,10 @@ interface SideToggleSectionInput {
 function SideToggleSectionStockPageComponent({leftSide, rightSide, isLeftSectionActive, isRightSectionActive, onClickLeftSection, onClickRightSection}:SideToggleSectionInput){
   return(
     <span className="flex text-[#555555] text-sm font-semibold text-center border-b-color-standard border-b">
-      <div className={`w-1/2 cursor-pointer py-2.5 ${isLeftSectionActive && "border-b border-green-400 text-green-400"}`} onClick={onClickLeftSection}>
+      <div className={`w-1/2 cursor-pointer py-3 ${isLeftSectionActive && "border-b border-green-400 text-green-400"}`} onClick={onClickLeftSection}>
         {leftSide}
       </div>
-      <div className={`w-1/2 cursor-pointer py-2.5 ${isRightSectionActive && "border-b border-red-400 text-red-400"}`} onClick={onClickRightSection}>
+      <div className={`w-1/2 cursor-pointer py-3 ${isRightSectionActive && "border-b border-red-400 text-red-400"}`} onClick={onClickRightSection}>
         {rightSide}
       </div>
     </span>
