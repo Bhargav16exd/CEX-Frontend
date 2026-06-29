@@ -77,7 +77,7 @@ export default function OpenOrdersComponentStockPage({stockSymbol, fetchOpenOrde
             className="flex justify-start items-center px-14 py-1.5 text-2xs border-b border-b-color-standard text-[#A1A1A1] font-mono uppercase hover:bg-[#0A0A0A]">
               <span className="w-[15%] font-bold text-white">{market}-{order.symbol.toUpperCase()}</span>
               <span className={`w-[10%] 
-                ${ order?.side == SideSpotEnum.ask || order?.side == SidePerpEnum.long ? "text-red-400" : "text-green-400"}`}>
+                ${ order?.side == SideSpotEnum.ask || order?.side == SidePerpEnum.short ? "text-red-400" : "text-green-400"}`}>
                 {order.side}</span>
               <span className="w-[10%]">{order.type}</span>
               <span className="w-[10%]">{order.price}</span>

@@ -18,6 +18,8 @@ import ButtonRedComponent from "../components/ButtonRedComponent";
 import PlacedOrderResponseComponent from "../components/PlacedOrderResponseComponent";
 import OpenOrdersComponentStockPage from "../components/OpenOrdersComponentStockPage";
 import OrderHistoryComponentStockPage from "../components/OrderHistoryComponentStockPage";
+import FillComponentStockPage from "../components/FillComponentStockPage";
+import OpenContractComponent from "../components/OpenContractComponent";
 
 export type Orderbook = {
   updateId:number
@@ -383,10 +385,10 @@ export function PerpStockPage(){
               isOpenOrderActive && <OpenOrdersComponentStockPage stockSymbol={stockSymbol!} fetchOpenOrders={fetchOpenOrders} market={MarketType.perp} cancelOrder={()=>{}}/>
             }
             {
-              isContractActive && <OpenContractComponent/>
+              isContractActive && <OpenContractComponent stockSymbol={stockSymbol!} fetchOpenContract={fetchOpenContract}/>
             }
             {
-              isFillsActive && <FillHistoryComponent/>
+              isFillsActive && <FillComponentStockPage stockSymbol={stockSymbol!} market={MarketType.perp} fetchFills={fetchFills}/>
             }
             {
               isOrderHistoryActive && <OrderHistoryComponentStockPage stockSymbol={stockSymbol!} fetchOrders={fetchOrders} market={MarketType.perp}/>
@@ -503,175 +505,6 @@ export default function InputLabelComponent({labelName, value, handleChange, nam
         <p className="text-[#555555]">{unit}</p>
       </div>
       
-    </div>
-  )
-}
-
-
-function OpenContractComponent(){
-
-  const {stockSymbol} = useParams()
-
-  const dispatch = useDispatch<AppDispatch>();
-  const [order, setOrder] = useState<any>(null);
-
-  async function OnClickCloseContract(){}
-
-  async function fetch(){
-    try {
-      const response = await dispatch(fetchOpenContract(stockSymbol)).unwrap()
-      if(response.data?.success == true){
-        setOrder(response?.data)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(()=>{
-    fetch()
-  },[])
-
-
-  return(
-    <div className="mb-10 uppercase">
-      
-      <div className="flex w-full border-[rgb(37,37,37)] border-b text-[#414141] px-14 py-1 text-xs">
-        <span className="w-[15%]">MARKET</span>
-        <span className="w-[10%]">SIDE</span>
-        <span className="w-[10%]">QTY</span>
-        <span className="w-[10%]">ENTRY PRICE</span>
-        <span className="w-[10%]">MARGIN</span>
-        <span className="w-[15%]">UNREALIZED PROFIT</span>
-        <span className="w-[10%]">UNREALIZED LOSS</span>
-
-        
-      </div>
-      <div>
-        {
-          order != null &&
-          <div className="flex items-center px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono uppercase">
-            <span className="w-[15%] font-medium">PERP-{order.symbol?.toUpperCase()}</span>
-            <span className="w-[10%]">{order.side}</span>
-            <span className="w-[10%]">{Math.abs(order.contract_quantity)}</span>
-            <span className="w-[10%]">{order.avg_price}</span>
-            <span className="w-[10%]">{order.collateral} </span>
-            <span className="w-[15%]">{order.realizedProfit}</span>
-            <span className={`w-[10%]`}>{order.realizedLoss}</span>
-            <button className="font-semibold text-white text-xs bg-[#222222] py-1 px-4 rounded-md border-[#333333] border-2 cursor-pointer mx-10" onClick={OnClickCloseContract}>Close</button>
-          </div>    
-        }
-      </div>
-
-      <div className="flex justify-end items-center gap-10 py-6 px-6">
-        <button onClick={fetch} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer`}>
-          Refresh
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function FillHistoryComponent(){
-
-  const {stockSymbol} = useParams()
-
-  const dispatch = useDispatch<AppDispatch>();
-  const [fills, setFills] = useState<any>(null);
-  const [offset, setOffset] = useState(0);
-
-  function NextPage(){
-    const value = offset
-    setOffset(value + 5)
-  }
-
-  function PrevPage(){
-    if(offset === 0) return;
-    const value = offset
-    setOffset(value - 5)
-  }
-
-  async function fetchFill(){
-    try {
-      
-      const requestPayload = {
-        count:"5",
-        offset:offset.toString(),
-        market:"perp",
-        symbol:stockSymbol!
-      }
-
-      const response = await dispatch(fetchFills(requestPayload)).unwrap()
-      setFills(response?.data)
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(()=>{
-    setFills(null);
-    fetchFill()
-  },[offset])
-
-
-  return(
-    <div className="mb-10 uppercase">
-      
-      <div className="flex w-full border-[#252525] border-b text-[#414141] px-14 py-1 text-xs">
-        <span className="w-[15%]">Market</span>
-        <span className="w-[10%]">Side</span>
-        <span className="w-[10%]">Price</span>
-        <span className="w-[15%]">Quantity</span>
-        <span className="w-[10%]">Fee</span>
-        <span className="w-[10%]">Role</span>
-        <span className="w-[15%]">Time</span>
-        
-      </div>
-      <div >
-        {
-          fills 
-          
-          ?
-            fills.length > 0 ?
-            fills.map((fill:any)=>(
-              <div className="flex px-14 py-2 text-xs border-b border-[#252525] text-[#A1A1A1] font-mono">
-                <span className="w-[15%]">PERP-{fill.symbol.toUpperCase()}</span>
-                <span className="w-[10%]">{fill.side}</span>
-                <span className="w-[10%]">{fill.price}</span>
-                <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
-                <span className="w-[10%]">0</span>
-                <span className="w-[10%]">{fill.role}</span>
-                <span className="w-[15%]">{new Date(fill.createdAt).toLocaleString("en-us",{
-                  month: "short",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second:'2-digit',
-                  hour12: false,
-                })}</span>
-              </div>    
-            ))
-            :
-            <div className="w-full text-center my-8 text-sm text-[#555555]">Empty fills History</div>
-          :
-          <div className="flex justify-center items-center py-10">
-            <LoaderWhite/>
-          </div>
-        }
-      </div>
-
-      <div className="flex justify-end items-center gap-10 py-6 px-6">
-        <button onClick={PrevPage} className={`bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black ${Number(offset) == 0 ? "cursor-not-allowed" : "cursor-pointer"}`}>
-          Prev
-        </button>
-        <p className="text-gray-400 text-sm">
-          {offset}
-        </p>
-        <button onClick={NextPage} className="bg-[#CCCCCC] py-1 text-xs font-semibold rounded-md px-4 text-black cursor-pointer">
-          Next
-        </button>
-      </div>
     </div>
   )
 }
