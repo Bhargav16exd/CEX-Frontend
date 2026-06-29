@@ -82,7 +82,8 @@ interface SideToggleSectionInput {
 
 function SideToggleSectionStockPageComponent({leftSide, rightSide, isLeftSectionActive, isRightSectionActive, onClickLeftSection, onClickRightSection}:SideToggleSectionInput){
   return(
-    <span className="flex text-[#555555] text-sm font-semibold text-center border-b-color-standard border-b">
+    <span 
+    className="flex text-[#555555] text-sm font-semibold text-center border-b-color-standard border-b">
       <div className={`w-1/2 cursor-pointer py-3 ${isLeftSectionActive && "border-b border-green-400 text-green-400"}`} onClick={onClickLeftSection}>
         {leftSide}
       </div>
@@ -96,7 +97,8 @@ function SideToggleSectionStockPageComponent({leftSide, rightSide, isLeftSection
 
 function OrderTypeToggleSectionComponenet(){
   return(
-    <div className="bg-[#0A0A0A] rounded-sm flex p-1 mb-2 mt-6 border border-b-color-standard">
+    <div 
+    className="bg-[#0A0A0A] rounded-sm flex p-1 mb-2 mt-6 border border-b-color-standard">
       <div className={`w-1/2 text-center text-xs py-2 bg-[#1A1A1A] rounded-sm text-white cursor-pointer`}>
           Limit
       </div>

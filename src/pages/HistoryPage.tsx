@@ -7,6 +7,8 @@ import type { AppDispatch } from "../redux/store";
 import ETHLOGO from "../assets/eth.webp"
 import SOLLOGO from "../assets/sol.webp"
 import BTCLOGO from "../assets/btc.webp"
+import { SidePerpEnum, SideSpotEnum } from "@bhargav16exdd/cex";
+import { StatusBadge } from "../components/StockPageComponents";
 
 //@ts-ignore
 enum OrderStatus {
@@ -38,34 +40,39 @@ export default function HistoryPage(){
 
   return(
     <NavigationLayout>
-      <div className="min-h-screen min-w-screen bg-[#0A0A0A] tracking-tight">
+      <div className="min-h-screen min-w-screen bg-black-standard tracking-tight">
 
-        <div className="px-9 border-[#252525] border-b-2 py-10">
-          <h1 className="text-white text-3xl font-semibold">
+        <div className="px-9 border-b-color-standard border-b ">
+
+          <h1 className="text-white text-3xl font-semibold pt-10">
             History
           </h1>
-          <p className="text-[#A1A1A1] py-1">
+          <p className="text-[#A1A1A1] py-2 text-sm">
             All markets · All time
           </p>
 
            <span className="flex items-center gap-2 py-4">
             <span className="h-1 w-1 animate-ping rounded-full bg-red-600 "></span>
-            <p className="text-[#555555] text-xs">
+            <p className="text-[#555555] text-2xs">
               History is eventually updated, it may take time to reflect your latest orders
             </p>
           </span> 
         </div>
 
         {/* Bottom Div */}
-        <div className="px-9 py-8 text-white flex flex-col gap-8">
+        <div className="px-9 py-4 text-white flex flex-col gap-8">
 
-          <div className="p-1 border-[#252525] border-2 rounded-md w-fit bg-[#111111] flex gap-2 text-xs font-semibold">
-            <p
+          <div className="flex w-auto bg-[#0A0A0A] rounded-sm p-1 mb-2 mt-6 border border-b-color-standard max-w-2xs">
+            <div 
             onClick={OnClickSpotHistory} 
-            className={` py-1 px-4 rounded-md flex justify-center items-center cursor-pointer ${isSpotHistoryActive && "bg-[#222222]"}`}>Spot</p>
-            <p 
+            className={`w-1/2 text-center text-xs py-2 cursor-pointer ${isSpotHistoryActive ? "bg-[#1A1A1A] rounded-sm text-white" : "text-[#8A8A8A]"}`}>
+              SPOT
+            </div>
+            <div 
             onClick={OnClickPerpsHistory}
-            className={` py-1 px-4 rounded-md flex justify-center items-center cursor-pointer ${isPerpsHistoryActive && "bg-[#222222]"}`}>Perps</p>
+            className={`w-1/2 text-center text-xs py-2 cursor-pointer ${isPerpsHistoryActive ? "bg-[#1A1A1A] rounded-sm text-white" : "text-[#8A8A8A]"} `}>
+              PERP
+            </div>
           </div>
 
           {
@@ -109,8 +116,8 @@ function PerpsHistory(){
   }
 
   return(
-  <div className="border-[#252525] border-2 rounded-md w-full bg-[#111111] text-white">
-    <span className="flex px-4 py-4 border-[#252525] border-b-2 gap-6">
+  <div className="border-b-color-standard border rounded-sm w-full bg-[#0A0A0A] text-white">
+    <span className="flex px-4 py-4 border-b-color-standard border-b gap-6">
       <span className="flex w-auto gap-4 items-center">
         <h1 className="text-md font-semibold">History</h1>
         <p className="text-xs text-blue-400 bg-blue-950 border border-blue-700 py-1 px-3 rounded-full font-semibold">PERPETUAL</p> 
@@ -119,13 +126,13 @@ function PerpsHistory(){
 
       <div className=" text-white flex flex-col gap-8">
 
-        <div className="p-1 border-[#252525] border-2 rounded-md w-fit bg-[#111111] flex gap-2 text-xs font-semibold">
+        <div className="p-1 border-b-color-standard border rounded-md w-fit  flex gap-2 text-xs font-semibold">
           <p
           onClick={OnClickFillsHistory} 
-          className={` py-1 px-4 rounded-md flex justify-center items-center cursor-pointer ${isFillsHistoryActive && "bg-[#222222]"}`}>Fills</p>
+          className={` py-1 px-4 rounded-sm flex justify-center items-center cursor-pointer ${isFillsHistoryActive && "bg-[#222222]"}`}>Fills</p>
           <p 
           onClick={OnClickOrdersHistory}
-          className={` py-1 px-4 rounded-md flex justify-center items-center cursor-pointer ${isOrderHistoryActive && "bg-[#222222]"}`}>Orders</p>
+          className={` py-1 px-4 rounded-sm flex justify-center items-center cursor-pointer ${isOrderHistoryActive && "bg-[#222222]"}`}>Orders</p>
         </div>
 
       </div>
@@ -140,7 +147,7 @@ function PerpsHistory(){
       }
     </div>
       
-    </div>
+  </div>
   )
 }
 
@@ -160,8 +167,9 @@ function SpotHistory(){
   }
 
   return(
-  <div className="border-[#252525] border-2 rounded-md w-full bg-[#111111] text-white">
-    <span className="flex px-4 py-4 border-[#252525] border-b-2 gap-6">
+  <div className="border-b-color-standard border rounded-sm w-full text-white bg-[#0A0A0A]">
+
+    <span className="flex px-4 py-4 border-b-color-standard border-b gap-6">
       <span className="flex w-auto gap-4 items-center">
         <h1 className="text-md font-semibold">History</h1>
         <p className="text-xs text-green-400 bg-green-950 border border-green-700 py-1 px-3 rounded-full font-semibold">SPOT</p> 
@@ -169,13 +177,13 @@ function SpotHistory(){
 
       <div className=" text-white flex flex-col gap-8">
 
-        <div className="p-1 border-[#252525] border-2 rounded-md w-fit bg-[#111111] flex gap-2 text-xs font-semibold">
+        <div className="p-1 border-b-color-standard border rounded-sm w-fit flex gap-2 text-xs font-semibold">
           <p
           onClick={OnClickFillsHistory} 
-          className={` py-1 px-4 rounded-md flex justify-center items-center cursor-pointer ${isFillsHistoryActive && "bg-[#222222]"}`}>Fills</p>
+          className={` py-1 px-4 rounded-sm flex justify-center items-center cursor-pointer ${isFillsHistoryActive && "bg-[#222222]"}`}>Fills</p>
           <p 
           onClick={OnClickOrdersHistory}
-          className={` py-1 px-4 rounded-md flex justify-center items-center cursor-pointer ${isOrderHistoryActive && "bg-[#222222]"}`}>Orders</p>
+          className={` py-1 px-4 rounded-sm flex justify-center items-center cursor-pointer ${isOrderHistoryActive && "bg-[#222222]"}`}>Orders</p>
         </div>
 
       </div>
@@ -235,9 +243,10 @@ function FillHistoryComponent({market}:{market:string}){
 
 
   return(
-    <div className="mb-10 uppercase font-mono">
+    <div className="mb-10">
       
-      <div className="flex w-full border-[#252525] border-b-2 text-[#414141] px-14 py-1 text-xs bg-[#080808]">
+      <div 
+      className="flex w-full border-b-color-standard border-b text-[#414141] px-14 py-2 text-xs uppercase font-bold overflow-x-scroll">
         <span className="w-[20%]">Market</span>
         <span className="w-[15%]">Side</span>
         <span className="w-[15%]">Price</span>
@@ -247,24 +256,28 @@ function FillHistoryComponent({market}:{market:string}){
         <span className="w-[20%]">Time</span>
         
       </div>
-      <div >
+      <div>
         {
           fills ? 
 
           fills.length > 0 ?
           fills.map((fill:any,idx:number)=>(
-            <div key={idx} className="flex px-14 py-4 text-sm border-b border-[#252525] text-[#A1A1A1] font-mono justify-center items-center">
+            <div 
+            key={idx} 
+            className="flex px-14 py-2.5 text-xs border-b border-b-color-standard text-[#A1A1A1] font-mono justify-center items-center uppercase">
               <span className="w-[20%] flex justify-start items-center gap-2">
                 <img src={fetchLogo(fill.symbol.toUpperCase())} alt="logo" className="h-8"/>
-                <p>PERP-{fill.symbol.toUpperCase()}</p>
+                <p
+                className="font-bold text-white"
+                >{market}-{fill.symbol.toUpperCase()}</p>
               </span>
-               <span className={`w-[15%]
-                ${fill.side == OrderSide.LONG        && "text-green-400"}
-                ${fill.side == OrderSide.SHORT       && "text-red-400" }
-              `}>{fill.side}</span>
-              <span className="w-[15%]">{fill.price}</span>
+              <span className={`w-[15%] 
+                  ${ fill.side === SideSpotEnum.ask || fill.side === SidePerpEnum.short ? "text-red-400" : "text-green-400"}`}>{
+                    fill.side}
+              </span>
+              <span className="w-[15%]">{fill.price} USD</span>
               <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
-              <span className="w-[15%]">0</span>
+              <span className="w-[15%]">0 USD</span>
               <span className={`w-[15%]`}>{fill.role}</span>
               <span className="w-[20%]">{new Date(fill.createdAt).toLocaleString("en-us",{
                 month: "short",
@@ -300,7 +313,6 @@ function FillHistoryComponent({market}:{market:string}){
 }
 
 function OrderHistoryComponent({market}:{market:string}){
-
 
   const dispatch = useDispatch<AppDispatch>();
   const [orders, setOrders] = useState<any>(null);
@@ -342,9 +354,10 @@ function OrderHistoryComponent({market}:{market:string}){
 
 
   return(
-    <div className="mb-10 uppercase font-mono">
+    <div className="mb-10">
       
-      <div className="flex w-full border-[#252525] border-b-2 text-[#414141] px-14 py-1 text-xs bg-[#080808]">
+      <div 
+      className="flex w-full border-b-color-standard border-b text-[#414141] px-14 py-2 text-xs uppercase font-bold overflow-x-scroll">
         <span className="w-[20%]">MARKET</span>
         <span className="w-[15%]">SIDE</span>
         <span className="w-[15%]">TYPE</span>
@@ -359,25 +372,23 @@ function OrderHistoryComponent({market}:{market:string}){
           orders ?
           orders.length > 0 ?
           orders.map((order:any, idx:number)=>(
-            <div key={idx} className="flex px-14 py-4 text-sm border-b border-[#252525] text-[#A1A1A1] font-mono justify-center items-center">
+            <div 
+            key={idx} 
+            className="flex px-14 py-2.5 text-xs border-b border-b-color-standard text-[#A1A1A1] font-mono justify-center items-center uppercase">
               <span className="w-[20%] flex justify-start items-center gap-2">
                 <img src={fetchLogo(order.symbol.toUpperCase())} alt="logo" className="h-8"/>
-                <p>PERP-{order.symbol.toUpperCase()}</p>
+                <p 
+                className="font-bold text-white"
+                >{market}-{order.symbol.toUpperCase()}</p>
               </span>
-              <span className={`w-[15%]
-                ${order.side == OrderSide.LONG        && "text-green-400"}
-                ${order.side == OrderSide.SHORT       && "text-red-400" }
-              `}>{order.side}</span>
+              <span className={`w-[15%] 
+                  ${ order.side === SideSpotEnum.ask || order.side === SidePerpEnum.short ? "text-red-400" : "text-green-400"}`}>{
+                    order.side}
+              </span>
               <span className="w-[15%]">{order.type}</span>
               <span className="w-[15%]">{order.price}</span>
               <span className="w-[15%]">{order.quantity} {order.symbol.toUpperCase()}</span>
-              <span className={`w-[15%] 
-                ${order.status == OrderStatus.OPEN          && "text-blue-400" }
-                ${order.status == OrderStatus.CLOSED        && "text-green-400"}
-                ${order.status == OrderStatus.PARTIAL_FILL  && "text-yellow-400" }
-                ${order.status == OrderStatus.CANCELLED     && "text-red-400"}
-                `}
-                >{order.status}</span>
+              <span className={`w-[15%]`}><StatusBadge status={order.status}/></span>
               <span className="w-[20%]">{new Date(order.createdAt).toLocaleString("en-us",{
                 month: "short",
                 day: "numeric",
