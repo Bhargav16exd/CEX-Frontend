@@ -9,6 +9,8 @@ import SOLLOGO from "../assets/sol.webp"
 import BTCLOGO from "../assets/btc.webp"
 import { SidePerpEnum, SideSpotEnum } from "@bhargav16exdd/cex";
 import { StatusBadge } from "../components/StockPageComponents";
+import FillCard from "../components/FillCardComponentHistoryPage";
+import OrderCard from "../components/OrderCardComponentHistoryPage";
 
 //@ts-ignore
 enum OrderStatus {
@@ -62,7 +64,7 @@ export default function HistoryPage(){
         {/* Bottom Div */}
         <div className="px-9 py-4 text-white flex flex-col gap-8">
 
-          <div className="flex w-auto bg-[#0A0A0A] rounded-sm p-1 mb-2 mt-6 border border-b-color-standard max-w-2xs">
+          <div className="flex w-auto bg-[#0A0A0A] rounded-sm p-1 mb-2 mt-6 border border-b-color-standard md:max-w-2xs">
             <div 
             onClick={OnClickSpotHistory} 
             className={`w-1/2 text-center text-xs py-2 cursor-pointer ${isSpotHistoryActive ? "bg-[#1A1A1A] rounded-sm text-white" : "text-[#8A8A8A]"}`}>
@@ -100,6 +102,56 @@ function fetchLogo(symbol:string):any{
   return store[symbol]!;
 }
 
+function SpotHistory(){
+
+  const [isFillsHistoryActive, setFillsHistoryActive] = useState(true);
+  const [isOrderHistoryActive, setOrdersHistoryActive] = useState(false);
+
+  function OnClickFillsHistory(){
+    setFillsHistoryActive(true);
+    setOrdersHistoryActive(false);
+  }
+
+  function OnClickOrdersHistory(){
+    setFillsHistoryActive(false);
+    setOrdersHistoryActive(true);
+  }
+
+  return(
+  <div className="border-b-color-standard border rounded-sm w-full text-white bg-[#0A0A0A]">
+
+    <span className="flex px-10 py-4 border-b-color-standard border-b gap-6 justify-between md:justify-normal">
+      <span className="flex w-auto gap-4 items-center">
+        <h1 className="text-md font-bold tracking-tighter">History</h1>
+      </span>
+
+      <div className=" text-white flex flex-col gap-8">
+
+        <div className="p-1 border-b-color-standard border rounded-sm w-fit flex gap-2 text-xs font-semibold">
+          <p
+          onClick={OnClickFillsHistory} 
+          className={` py-1 px-4 rounded-sm flex justify-center items-center cursor-pointer ${isFillsHistoryActive && "bg-[#222222]"}`}>Fills</p>
+          <p 
+          onClick={OnClickOrdersHistory}
+          className={` py-1 px-4 rounded-sm flex justify-center items-center cursor-pointer ${isOrderHistoryActive && "bg-[#222222]"}`}>Orders</p>
+        </div>
+
+      </div>
+    </span>
+
+    <div>
+      {
+        isFillsHistoryActive && <FillHistoryComponent market="spot"/>
+      }
+      {
+        isOrderHistoryActive && <OrderHistoryComponent market="spot"/>
+      }
+    </div>
+      
+    </div>
+  )
+}
+
 function PerpsHistory(){
 
   const [isFillsHistoryActive, setFillsHistoryActive] = useState(true);
@@ -117,10 +169,9 @@ function PerpsHistory(){
 
   return(
   <div className="border-b-color-standard border rounded-sm w-full bg-[#0A0A0A] text-white">
-    <span className="flex px-4 py-4 border-b-color-standard border-b gap-6">
+    <span className="flex px-10 py-4 border-b-color-standard border-b gap-6 justify-between md:justify-normal">
       <span className="flex w-auto gap-4 items-center">
-        <h1 className="text-md font-semibold">History</h1>
-        <p className="text-xs text-blue-400 bg-blue-950 border border-blue-700 py-1 px-3 rounded-full font-semibold">PERPETUAL</p> 
+        <h1 className="text-md font-bold tracking-tighter">History</h1>
   
       </span>
 
@@ -148,57 +199,6 @@ function PerpsHistory(){
     </div>
       
   </div>
-  )
-}
-
-function SpotHistory(){
-
-  const [isFillsHistoryActive, setFillsHistoryActive] = useState(true);
-  const [isOrderHistoryActive, setOrdersHistoryActive] = useState(false);
-
-  function OnClickFillsHistory(){
-    setFillsHistoryActive(true);
-    setOrdersHistoryActive(false);
-  }
-
-  function OnClickOrdersHistory(){
-    setFillsHistoryActive(false);
-    setOrdersHistoryActive(true);
-  }
-
-  return(
-  <div className="border-b-color-standard border rounded-sm w-full text-white bg-[#0A0A0A]">
-
-    <span className="flex px-4 py-4 border-b-color-standard border-b gap-6">
-      <span className="flex w-auto gap-4 items-center">
-        <h1 className="text-md font-semibold">History</h1>
-        <p className="text-xs text-green-400 bg-green-950 border border-green-700 py-1 px-3 rounded-full font-semibold">SPOT</p> 
-      </span>
-
-      <div className=" text-white flex flex-col gap-8">
-
-        <div className="p-1 border-b-color-standard border rounded-sm w-fit flex gap-2 text-xs font-semibold">
-          <p
-          onClick={OnClickFillsHistory} 
-          className={` py-1 px-4 rounded-sm flex justify-center items-center cursor-pointer ${isFillsHistoryActive && "bg-[#222222]"}`}>Fills</p>
-          <p 
-          onClick={OnClickOrdersHistory}
-          className={` py-1 px-4 rounded-sm flex justify-center items-center cursor-pointer ${isOrderHistoryActive && "bg-[#222222]"}`}>Orders</p>
-        </div>
-
-      </div>
-    </span>
-
-    <div>
-      {
-        isFillsHistoryActive && <FillHistoryComponent market="spot"/>
-      }
-      {
-        isOrderHistoryActive && <OrderHistoryComponent market="spot"/>
-      }
-    </div>
-      
-    </div>
   )
 }
 
@@ -246,7 +246,7 @@ function FillHistoryComponent({market}:{market:string}){
     <div className="mb-10">
       
       <div 
-      className="flex w-full border-b-color-standard border-b text-[#414141] px-14 py-2 text-xs uppercase font-bold overflow-x-scroll">
+      className="hidden md:flex w-full border-b-color-standard border-b text-[#414141] px-14 py-2 text-xs uppercase font-bold overflow-x-scroll">
         <span className="w-[20%]">Market</span>
         <span className="w-[15%]">Side</span>
         <span className="w-[15%]">Price</span>
@@ -262,31 +262,35 @@ function FillHistoryComponent({market}:{market:string}){
 
           fills.length > 0 ?
           fills.map((fill:any,idx:number)=>(
-            <div 
-            key={idx} 
-            className="flex px-14 py-2.5 text-xs border-b border-b-color-standard text-[#A1A1A1] font-mono justify-center items-center uppercase">
-              <span className="w-[20%] flex justify-start items-center gap-2">
-                <img src={fetchLogo(fill.symbol.toUpperCase())} alt="logo" className="h-8"/>
-                <p
-                className="font-bold text-white"
-                >{market}-{fill.symbol.toUpperCase()}</p>
-              </span>
-              <span className={`w-[15%] 
-                  ${ fill.side === SideSpotEnum.ask || fill.side === SidePerpEnum.short ? "text-red-400" : "text-green-400"}`}>{
-                    fill.side}
-              </span>
-              <span className="w-[15%]">{fill.price} USD</span>
-              <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
-              <span className="w-[15%]">0 USD</span>
-              <span className={`w-[15%]`}>{fill.role}</span>
-              <span className="w-[20%]">{new Date(fill.createdAt).toLocaleString("en-us",{
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second:'2-digit',
-                hour12: false,
-              })}</span>
+            <div className="w-full flex p-4 md:p-0">
+              <div 
+              key={idx} 
+              className="hidden md:flex w-full  flex-col md:flex-row px-14 py-2.5 text-xs border-b border-b-color-standard text-[#A1A1A1] font-mono justify-center items-center uppercase">
+                <span className="w-[20%] flex justify-start items-center gap-2">
+                  <img src={fetchLogo(fill.symbol.toUpperCase())} alt="logo" className="h-8"/>
+                  <p
+                  className="font-bold text-white"
+                  >{market}-{fill.symbol.toUpperCase()}</p>
+                </span>
+                <span className={`w-[15%] 
+                    ${ fill.side === SideSpotEnum.ask || fill.side === SidePerpEnum.short ? "text-red-400" : "text-green-400"}`}>{
+                      fill.side}
+                </span>
+                <span className="w-[15%]">{fill.price} USD</span>
+                <span className="w-[15%]">{fill.quantity} {fill.symbol.toUpperCase()}</span>
+                <span className="w-[15%]">0 USD</span>
+                <span className={`w-[15%]`}>{fill.role}</span>
+                <span className="w-[20%]">{new Date(fill.createdAt).toLocaleString("en-us",{
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second:'2-digit',
+                  hour12: false,
+                })}</span>
+              </div>
+
+              <FillCard fill={fill} market={market} fetchLogo={fetchLogo}/>
             </div>    
           ))
           : <div className="w-full text-center my-8 text-sm text-[#555555]">Empty Fill History</div>
@@ -357,7 +361,7 @@ function OrderHistoryComponent({market}:{market:string}){
     <div className="mb-10">
       
       <div 
-      className="flex w-full border-b-color-standard border-b text-[#414141] px-14 py-2 text-xs uppercase font-bold overflow-x-scroll">
+      className="hidden md:flex w-full border-b-color-standard border-b text-[#414141] px-14 py-2 text-xs uppercase font-bold overflow-x-scroll">
         <span className="w-[20%]">MARKET</span>
         <span className="w-[15%]">SIDE</span>
         <span className="w-[15%]">TYPE</span>
@@ -372,9 +376,10 @@ function OrderHistoryComponent({market}:{market:string}){
           orders ?
           orders.length > 0 ?
           orders.map((order:any, idx:number)=>(
+            <div className="w-full flex p-4 md:p-0">
             <div 
             key={idx} 
-            className="flex px-14 py-2.5 text-xs border-b border-b-color-standard text-[#A1A1A1] font-mono justify-center items-center uppercase">
+            className="hidden md:flex w-full px-14 py-2.5 text-xs border-b border-b-color-standard text-[#A1A1A1] font-mono justify-center items-center uppercase">
               <span className="w-[20%] flex justify-start items-center gap-2">
                 <img src={fetchLogo(order.symbol.toUpperCase())} alt="logo" className="h-8"/>
                 <p 
@@ -397,6 +402,8 @@ function OrderHistoryComponent({market}:{market:string}){
                 second:'2-digit',
                 hour12: false,
               })}</span>
+            </div>
+            <OrderCard order={order} market={market} fetchLogo={fetchLogo}/>
             </div>    
           ))
           : <div className="w-full text-center my-8 text-sm text-[#555555]">Empty orders History</div>
@@ -421,3 +428,4 @@ function OrderHistoryComponent({market}:{market:string}){
     </div>
   )
 }
+
