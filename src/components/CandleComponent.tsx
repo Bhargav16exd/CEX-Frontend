@@ -38,7 +38,7 @@ export default function CandleComponent(){
   },[])
 
   return(
-    <div ref={chartContainerRef} className="w-full "></div>
+    <div ref={chartContainerRef} className="w-full"></div>
   )
 }
 

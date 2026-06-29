@@ -329,10 +329,10 @@ export function SpotStockPage(){
     <NavigationLayout>
 
       {/* Trade and Ticker Page */}
-      <div className="min-h-screen min-w-screen bg-black-standard flex text-white">
+      <div className="min-h-screen w-screen bg-black-standard flex flex-col md:flex-row text-white">
         
         {/* ------- CANDLES & ORDERBOOK SECTION -------*/}
-        <div className="w-[80%] rounded-sm flex flex-col my-4 mr-2 ml-4">
+        <div className="md:w-[80%] rounded-sm flex flex-col my-4 mx-4 md:mr-2 md:ml-4">
 
           <TopBarSectionStockPageComponent
             symbol={stockSymbol!}
@@ -343,14 +343,14 @@ export function SpotStockPage(){
             volume={64034}
           />
 
-          <div className="flex w-full gap-4">
-             <div className="w-[80%] h-fit px-4 py-2 bg-[#0A0A0A] rounded-sm">
+          <div className="flex flex-col md:flex-row gap-4">
+             <div className="w-full md:w-[75%] h-fit px-4 py-2 bg-[#0A0A0A] rounded-sm">
               <CandleComponent/>
             </div>
             <Orderbook Orderbook={orderbook}/>
           </div>
           
-          <div className="flex flex-col bg-[#0A0A0A] mt-4 rounded-sm overflow-hidden">
+          <div className="hidden md:flex flex-col bg-[#0A0A0A] mt-4 rounded-sm overflow-hidden">
 
             <span className="flex text-[#A1A1A1] p-2 gap-8 text-xs tracking-tight ">
               <div 
@@ -378,7 +378,7 @@ export function SpotStockPage(){
         </div>
 
         {/* ------- LONG OR SHORT SECTION -------*/}
-        <div className="h-fit w-[20%] rounded-sm bg-[#0A0A0A] my-4 mx-2">
+        <div className="h-fit md:w-[20%] rounded-sm bg-[#0A0A0A] my-4 mx-4 md:ml-2 md:mr-4 mb-24">
 
           <SideToggleSectionStockPageComponent
             leftSide="Bid"

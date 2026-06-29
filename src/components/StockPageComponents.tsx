@@ -25,47 +25,51 @@ function fetchLogo(symbol:string):any{
 function TopBarSectionStockPageComponent({symbol, market, lastTradedPrice, highPrice, lowPrice, volume}:TopBarSectionComponentInput){
   return(
 
-    <div className="bg-[#0A0A0A] text-sm w-full py-4 rounded-sm flex px-6 font-mono tracking-tighter gap-8 mb-4 ">
+    <div className="flex flex-col md:flex-row bg-[#0A0A0A] text-sm w-full py-4 rounded-sm px-6 font-mono tracking-tighter gap-8 mb-4 ">
 
-    <div className="flex justify-center items-center">
-      <p className="flex justify-center items-center gap-2 font-semibold font-sans ">
-        <img src={fetchLogo(symbol?.toUpperCase())} alt="logo" className="h-8"/>
-        {symbol.toLocaleUpperCase()}-
-         { market === MarketType.spot && "SPOT"}
-         { market === MarketType.perp && "PERP"}
-      </p>
-    </div>
-    <div className="flex flex-col justify-center items-start tracking-tight font-sans">
-      <p className="text-[#444444] text-2xs ">Last Trd. Price</p>
-      <div className="text-[18px] font-medium text-green-400 ">{lastTradedPrice}</div>
-    </div>
-    <div className="flex flex-col justify-center items-start tracking-tight font-sans">
-      <p className="text-[#444444] text-2xs ">Mark Price</p>
-      <div className="text-[18px] font-medium ">{lastTradedPrice}</div>
-    </div>
-    
-    <div className="flex justify-center items-center font-mono gap-8 ">
-
-
-      <div className="flex flex-col gap-1">
-        <p className="text-[#444444] text-2xs underline underline-offset-1 decoration-dotted">Index Price</p>
-        <p className="text-xs">${highPrice}</p>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <p className="text-[#444444] text-2xs underline underline-offset-1 decoration-dotted">24H High</p>
-        <p className="text-xs">${highPrice}</p>
-      </div>
-        <div className="flex flex-col gap-1">
-        <p className="text-[#444444] text-2xs underline underline-offset-1 decoration-dotted">24H Low</p>
-        <p className="text-xs">${lowPrice}</p>
-      </div>
-        <div className="flex flex-col gap-1">
-        <p className="text-[#444444] text-2xs underline underline-offset-1 decoration-dotted">24H Vol.</p>
-        <p className="text-xs">${volume}</p>
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex md:justify-center items-center">
+          <p className="flex justify-center items-center gap-2 font-semibold font-sans ">
+            <img src={fetchLogo(symbol?.toUpperCase())} alt="logo" className="h-8"/>
+            {symbol.toLocaleUpperCase()}-
+            { market === MarketType.spot && "SPOT"}
+            { market === MarketType.perp && "PERP"}
+          </p>
+        </div>
+        <span className="flex gap-8">
+          <div className="flex flex-col justify-center items-start tracking-tight font-sans">
+            <p className="text-[#444444] text-2xs ">Last Trd. Price</p>
+            <div className="text-[18px] font-medium text-green-400 ">{lastTradedPrice}</div>
+          </div>
+          <div className="flex flex-col justify-center items-start tracking-tight font-sans">
+            <p className="text-[#444444] text-2xs ">Mark Price</p>
+            <div className="text-[18px] font-medium ">{lastTradedPrice}</div>
+          </div>
+        </span>
       </div>
       
-    </div>
+      <div className="flex md:justify-center items-center font-mono gap-8">
+
+
+        <div className="flex flex-col gap-1">
+          <p className="text-[#444444] text-2xs underline underline-offset-1 decoration-dotted">Index Price</p>
+          <p className="text-xs">${highPrice}</p>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p className="text-[#444444] text-2xs underline underline-offset-1 decoration-dotted">24H High</p>
+          <p className="text-xs">${highPrice}</p>
+        </div>
+          <div className="flex flex-col gap-1">
+          <p className="text-[#444444] text-2xs underline underline-offset-1 decoration-dotted">24H Low</p>
+          <p className="text-xs">${lowPrice}</p>
+        </div>
+          <div className="flex flex-col gap-1">
+          <p className="text-[#444444] text-2xs underline underline-offset-1 decoration-dotted">24H Vol.</p>
+          <p className="text-xs">${volume}</p>
+        </div>
+        
+      </div>
     </div>
   )
 }

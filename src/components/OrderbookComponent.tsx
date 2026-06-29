@@ -19,7 +19,7 @@ export function Orderbook({Orderbook}:{Orderbook:Orderbook}){
   const maxTotal = Math.max(enrichAsks.at(-1)?.total ?? 0, enrichBids.at(-1)?.total ?? 0)
 
   return(
-    <div className="w-[25%] rounded-sm overflow-hidden">
+    <div className="md:w-[25%] rounded-sm overflow-hidden">
 
         <div className="w-full px-4 py-4 flex justify-between items-center bg-[#0A0A0A]">
           <p className="text-xs font-semibold">Orderbook</p>
@@ -32,7 +32,7 @@ export function Orderbook({Orderbook}:{Orderbook:Orderbook}){
           <p className="w-[30%] flex justify-end">TOTAL</p>
         </div>
 
-        <div className="h-120 overflow-y-auto no-scrollbar ">
+        <div className="md:h-120 overflow-y-auto no-scrollbar ">
 
           {/* Render Asks */}
           <div className="flex flex-col-reverse h-auto bg-[#0A0A0A]">
